@@ -130,7 +130,7 @@ namespace SmartData.Lib.Services
         private static HashSet<string> _tagsToRemove = new HashSet<string>()
         {
             "questionable", "explicit", "sensitive", "censored", "uncensored", "solo", "general", "meme",
-            "meme attire", "mosaic censoring"
+            "meme attire"
         };
 
         public event EventHandler<int> TotalFilesChanged;
