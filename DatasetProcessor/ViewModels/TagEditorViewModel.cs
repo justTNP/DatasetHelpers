@@ -14,6 +14,7 @@ using SmartData.Lib.Interfaces.MachineLearning;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -68,6 +69,45 @@ namespace DatasetProcessor.ViewModels
         /// <summary>
         /// Gets the current type of file being edited, either .txt or .caption.
         /// </summary>
+        
+        [RelayCommand]
+        public async Task OpenFileAsync()
+        {
+            if (ImageFiles != null && SelectedItemIndex >= 0 && SelectedItemIndex < ImageFiles.Count)
+            {
+                string filePath = ImageFiles[SelectedItemIndex];
+                if (File.Exists(filePath))
+                {
+                    await Task.Run(() =>
+                    {
+                        try
+                        {
+                            using (Process process = new Process())
+                            {
+                                process.StartInfo = new ProcessStartInfo(filePath)
+                                {
+                                    UseShellExecute = true
+                                };
+                                process.Start();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.SetLatestLogMessage($"Error opening file: {ex.Message}", LogMessageColor.Error);
+                        }
+                    });
+                }
+                else
+                {
+                    Logger.SetLatestLogMessage("File not found.", LogMessageColor.Error);
+                }
+            }
+            else
+            {
+                Logger.SetLatestLogMessage("No file selected.", LogMessageColor.Warning);
+            }
+        }
+
         public string CurrentType
         {
             get

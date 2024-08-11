@@ -89,9 +89,9 @@ namespace DatasetProcessor.Views
             _inputHooks.ButtonF4 += async (sender, args) => await OnNavigationButtonDown("10");
             _inputHooks.ButtonF5 += async (sender, args) => await OnNavigationButtonDown("-100");
             _inputHooks.ButtonF6 += async (sender, args) => await OnNavigationButtonDown("100");
-            _inputHooks.ButtonF8 += async (sender, args) => await _viewModel.BlurImageAsync();
+            _inputHooks.ButtonF8 += async (sender, args) => await _viewModel.OpenFileAsync();
 
-            _inputHooks.MouseButton3 += async (sender, args) => await _viewModel.BlurImageAsync();
+            _inputHooks.MouseButton3 += async (sender, args) => await _viewModel.OpenFileAsync();
             _inputHooks.MouseButton4 += async (sender, args) => await OnNavigationButtonDown("-1");
             _inputHooks.MouseButton5 += async (sender, args) => await OnNavigationButtonDown("1");
 
