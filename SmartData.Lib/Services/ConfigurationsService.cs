@@ -49,7 +49,22 @@ namespace SmartData.Lib.Services
                 TagEditorConfigs = new TagEditorConfigs(),
                 ExtractSubsetConfigs = new ExtractSubsetConfigs(),
                 PromptGeneratorConfigs = new PromptGeneratorConfigs(),
-                MetadataViewerConfigs = new MetadataViewerConfigs()
+                MetadataViewerConfigs = new MetadataViewerConfigs(),
+                // Add new properties for hiding tabs
+                HideGalleryPage = false,
+                HideSortImages = false,
+                HideContentAwareCrop = false,
+                HideManualCrop = false,
+                HideInpaintImages = false,
+                HideResizeImages = false,
+                HideUpscaleImages = false,
+                HideGenerateTags = false,
+                HideProcessCaptions = false,
+                HideProcessTags = false,
+                HideTagEditor = false,
+                HideExtractSubset = false,
+                HidePromptGenerator = false,
+                HideMetadataViewer = false
             };
             Task.Run(() => LoadConfigurationsAsync());
         }
@@ -69,6 +84,25 @@ namespace SmartData.Lib.Services
             await CreateConfigFileIfNotExistAsync();
             string file = await File.ReadAllTextAsync(_configsFilePath);
             Configurations = JsonSerializer.Deserialize<Config>(file);
+
+            // If the deserialized object doesn't have the new properties, set them to default values
+            if (Configurations != null)
+            {
+                Configurations.HideGalleryPage ??= false;
+                Configurations.HideSortImages ??= false;
+                Configurations.HideContentAwareCrop ??= false;
+                Configurations.HideManualCrop ??= false;
+                Configurations.HideInpaintImages ??= false;
+                Configurations.HideResizeImages ??= false;
+                Configurations.HideUpscaleImages ??= false;
+                Configurations.HideGenerateTags ??= false;
+                Configurations.HideProcessCaptions ??= false;
+                Configurations.HideProcessTags ??= false;
+                Configurations.HideTagEditor ??= false;
+                Configurations.HideExtractSubset ??= false;
+                Configurations.HidePromptGenerator ??= false;
+                Configurations.HideMetadataViewer ??= false;
+            }
         }
 
         /// <summary>
@@ -112,6 +146,78 @@ namespace SmartData.Lib.Services
         public virtual void OnPropertyChanged(string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        // Implement the boolean properties for hiding tabs
+        public bool HideGalleryPage
+        {
+            get => Configurations.HideGalleryPage ?? false;
+            set { Configurations.HideGalleryPage = value; OnPropertyChanged(nameof(HideGalleryPage)); }
+        }
+        public bool HideSortImages
+        {
+            get => Configurations.HideSortImages ?? false;
+            set { Configurations.HideSortImages = value; OnPropertyChanged(nameof(HideSortImages)); }
+        }
+        public bool HideContentAwareCrop
+        {
+            get => Configurations.HideContentAwareCrop ?? false;
+            set { Configurations.HideContentAwareCrop = value; OnPropertyChanged(nameof(HideContentAwareCrop)); }
+        }
+        public bool HideManualCrop
+        {
+            get => Configurations.HideManualCrop ?? false;
+            set { Configurations.HideManualCrop = value; OnPropertyChanged(nameof(HideManualCrop)); }
+        }
+        public bool HideInpaintImages
+        {
+            get => Configurations.HideInpaintImages ?? false;
+            set { Configurations.HideInpaintImages = value; OnPropertyChanged(nameof(HideInpaintImages)); }
+        }
+        public bool HideResizeImages
+        {
+            get => Configurations.HideResizeImages ?? false;
+            set { Configurations.HideResizeImages = value; OnPropertyChanged(nameof(HideResizeImages)); }
+        }
+        public bool HideUpscaleImages
+        {
+            get => Configurations.HideUpscaleImages ?? false;
+            set { Configurations.HideUpscaleImages = value; OnPropertyChanged(nameof(HideUpscaleImages)); }
+        }
+        public bool HideGenerateTags
+        {
+            get => Configurations.HideGenerateTags ?? false;
+            set { Configurations.HideGenerateTags = value; OnPropertyChanged(nameof(HideGenerateTags)); }
+        }
+        public bool HideProcessCaptions
+        {
+            get => Configurations.HideProcessCaptions ?? false;
+            set { Configurations.HideProcessCaptions = value; OnPropertyChanged(nameof(HideProcessCaptions)); }
+        }
+        public bool HideProcessTags
+        {
+            get => Configurations.HideProcessTags ?? false;
+            set { Configurations.HideProcessTags = value; OnPropertyChanged(nameof(HideProcessTags)); }
+        }
+        public bool HideTagEditor
+        {
+            get => Configurations.HideTagEditor ?? false;
+            set { Configurations.HideTagEditor = value; OnPropertyChanged(nameof(HideTagEditor)); }
+        }
+        public bool HideExtractSubset
+        {
+            get => Configurations.HideExtractSubset ?? false;
+            set { Configurations.HideExtractSubset = value; OnPropertyChanged(nameof(HideExtractSubset)); }
+        }
+        public bool HidePromptGenerator
+        {
+            get => Configurations.HidePromptGenerator ?? false;
+            set { Configurations.HidePromptGenerator = value; OnPropertyChanged(nameof(HidePromptGenerator)); }
+        }
+        public bool HideMetadataViewer
+        {
+            get => Configurations.HideMetadataViewer ?? false;
+            set { Configurations.HideMetadataViewer = value; OnPropertyChanged(nameof(HideMetadataViewer)); }
         }
     }
 }

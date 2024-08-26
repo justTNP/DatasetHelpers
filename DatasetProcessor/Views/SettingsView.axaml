@@ -13,7 +13,31 @@
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml" />
 	</Design.DesignStyle>
 	<Grid RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 30, auto">
-		<Grid Classes="gridSecondary" Grid.Row="0"
+		<!-- Add checkboxes for hiding sections -->
+        <ItemsControl Grid.Row="0" Margin="10">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+			<Label Content="Hide: " FontSize="15"/>
+            <CheckBox Content="Gallery Page" IsChecked="{Binding HideGalleryPage}" Margin="5,0,5,5"/>
+            <CheckBox Content="Sort Images" IsChecked="{Binding HideSortImages}" Margin="5,0,5,5"/>
+            <CheckBox Content="Content Aware Crop" IsChecked="{Binding HideContentAwareCrop}" Margin="5,0,5,5"/>
+            <CheckBox Content="Manual Crop" IsChecked="{Binding HideManualCrop}" Margin="5,0,5,5"/>
+            <CheckBox Content="Inpaint Images" IsChecked="{Binding HideInpaintImages}" Margin="5,0,5,5"/>
+            <CheckBox Content="Resize Images" IsChecked="{Binding HideResizeImages}" Margin="5,0,5,5"/>
+            <CheckBox Content="Upscale Images" IsChecked="{Binding HideUpscaleImages}" Margin="5,0,5,5"/>
+            <CheckBox Content="Generate Tags" IsChecked="{Binding HideGenerateTags}" Margin="5,0,5,5"/>
+            <CheckBox Content="Process Captions" IsChecked="{Binding HideProcessCaptions}" Margin="5,0,5,5"/>
+            <CheckBox Content="Process Tags" IsChecked="{Binding HideProcessTags}" Margin="5,0,5,5"/>
+            <CheckBox Content="Tag/Caption Editor" IsChecked="{Binding HideTagEditor}" Margin="5,0,5,5"/>
+            <CheckBox Content="Extract Subset" IsChecked="{Binding HideExtractSubset}" Margin="5,0,5,5"/>
+            <CheckBox Content="Dataset Prompt Gen" IsChecked="{Binding HidePromptGenerator}" Margin="5,0,5,5"/>
+            <CheckBox Content="Metadata Viewer" IsChecked="{Binding HideMetadataViewer}" Margin="5,0,5,5"/>
+        </ItemsControl>
+
+		<Grid Classes="gridSecondary" Grid.Row="2"
 			  RowDefinitions="auto, 10, auto"
 			  ColumnDefinitions="1*, 1*, 1*, 1*, 1*">
 			<Label Grid.Row="0" 

@@ -55,6 +55,48 @@ public partial class MainViewModel : BaseViewModel
     [ObservableProperty]
     private SolidColorBrush _logMessageColor;
 
+    [ObservableProperty]
+    private bool _hideGalleryPage;
+
+    [ObservableProperty]
+    private bool _hideSortImages;
+
+    [ObservableProperty]
+    private bool _hideContentAwareCrop;
+
+    [ObservableProperty]
+    private bool _hideManualCrop;
+
+    [ObservableProperty]
+    private bool _hideInpaintImages;
+
+    [ObservableProperty]
+    private bool _hideResizeImages;
+
+    [ObservableProperty]
+    private bool _hideUpscaleImages;
+
+    [ObservableProperty]
+    private bool _hideGenerateTags;
+
+    [ObservableProperty]
+    private bool _hideProcessCaptions;
+
+    [ObservableProperty]
+    private bool _hideProcessTags;
+
+    [ObservableProperty]
+    private bool _hideTagEditor;
+
+    [ObservableProperty]
+    private bool _hideExtractSubset;
+
+    [ObservableProperty]
+    private bool _hidePromptGenerator;
+
+    [ObservableProperty]
+    private bool _hideMetadataViewer;
+
     /// <summary>
     /// Initializes a new instance of the MainViewModel class.
     /// </summary>
@@ -179,6 +221,22 @@ public partial class MainViewModel : BaseViewModel
                 DataContext = new MetadataViewModel(fileManipulator, imageProcessor, wDAutoTagger, logger, configs)
             });
         }
+
+        // Initialize hide settings with null checks
+        HideGalleryPage = configs.Configurations.HideGalleryPage ?? false;
+        HideSortImages = configs.Configurations.HideSortImages ?? false;
+        HideContentAwareCrop = configs.Configurations.HideContentAwareCrop ?? false;
+        HideManualCrop = configs.Configurations.HideManualCrop ?? false;
+        HideInpaintImages = configs.Configurations.HideInpaintImages ?? false;
+        HideResizeImages = configs.Configurations.HideResizeImages ?? false;
+        HideUpscaleImages = configs.Configurations.HideUpscaleImages ?? false;
+        HideGenerateTags = configs.Configurations.HideGenerateTags ?? false;
+        HideProcessCaptions = configs.Configurations.HideProcessCaptions ?? false;
+        HideProcessTags = configs.Configurations.HideProcessTags ?? false;
+        HideTagEditor = configs.Configurations.HideTagEditor ?? false;
+        HideExtractSubset = configs.Configurations.HideExtractSubset ?? false;
+        HidePromptGenerator = configs.Configurations.HidePromptGenerator ?? false;
+        HideMetadataViewer = configs.Configurations.HideMetadataViewer ?? false;
 
         _dynamicView = _views[AppPages.Welcome];
         SetPageName(AppPages.Welcome);

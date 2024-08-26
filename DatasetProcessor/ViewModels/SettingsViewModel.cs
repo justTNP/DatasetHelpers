@@ -16,6 +16,49 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private string _galleryInputFolder;
         private int? _galleryDisplayImageSize;
+
+        [ObservableProperty]
+        private bool _hideGalleryPage;
+
+        [ObservableProperty]
+        private bool _hideSortImages;
+
+        [ObservableProperty]
+        private bool _hideContentAwareCrop;
+
+        [ObservableProperty]
+        private bool _hideManualCrop;
+
+        [ObservableProperty]
+        private bool _hideInpaintImages;
+
+        [ObservableProperty]
+        private bool _hideResizeImages;
+
+        [ObservableProperty]
+        private bool _hideUpscaleImages;
+
+        [ObservableProperty]
+        private bool _hideGenerateTags;
+
+        [ObservableProperty]
+        private bool _hideProcessCaptions;
+
+        [ObservableProperty]
+        private bool _hideProcessTags;
+
+        [ObservableProperty]
+        private bool _hideTagEditor;
+
+        [ObservableProperty]
+        private bool _hideExtractSubset;
+
+        [ObservableProperty]
+        private bool _hidePromptGenerator;
+
+        [ObservableProperty]
+        private bool _hideMetadataViewer;
+
         public string GalleryDisplayImageSize
         {
             get => _galleryDisplayImageSize.ToString();
@@ -313,6 +356,22 @@ namespace DatasetProcessor.ViewModels
             PromptGeneratorTagsToAppend = Configs.Configurations.PromptGeneratorConfigs.TagsToAppend;
             PromptGeneratorAmountOfTags = Configs.Configurations.PromptGeneratorConfigs.AmountOfTags.ToString();
             PromptGeneratorAmountOfPrompts = Configs.Configurations.PromptGeneratorConfigs.AmountOfPrompts.ToString();
+
+            // Initialize hide settings
+            HideGalleryPage = Configs.Configurations.HideGalleryPage ?? false;
+            HideSortImages = Configs.Configurations.HideSortImages ?? false;
+            HideContentAwareCrop = Configs.Configurations.HideContentAwareCrop ?? false;
+            HideManualCrop = Configs.Configurations.HideManualCrop ?? false;
+            HideInpaintImages = Configs.Configurations.HideInpaintImages ?? false;
+            HideResizeImages = Configs.Configurations.HideResizeImages ?? false;
+            HideUpscaleImages = Configs.Configurations.HideUpscaleImages ?? false;
+            HideGenerateTags = Configs.Configurations.HideGenerateTags ?? false;
+            HideProcessCaptions = Configs.Configurations.HideProcessCaptions ?? false;
+            HideProcessTags = Configs.Configurations.HideProcessTags ?? false;
+            HideTagEditor = Configs.Configurations.HideTagEditor ?? false;
+            HideExtractSubset = Configs.Configurations.HideExtractSubset ?? false;
+            HidePromptGenerator = Configs.Configurations.HidePromptGenerator ?? false;
+            HideMetadataViewer = Configs.Configurations.HideMetadataViewer ?? false;
         }
 
         [RelayCommand]
@@ -656,6 +715,22 @@ namespace DatasetProcessor.ViewModels
                 10, 50);
             Configs.Configurations.PromptGeneratorConfigs.AmountOfPrompts = Math.Clamp(int.Parse(PromptGeneratorAmountOfPrompts),
                 10, ushort.MaxValue);
+
+            // Save hide settings
+            Configs.Configurations.HideGalleryPage = HideGalleryPage;
+            Configs.Configurations.HideSortImages = HideSortImages;
+            Configs.Configurations.HideContentAwareCrop = HideContentAwareCrop;
+            Configs.Configurations.HideManualCrop = HideManualCrop;
+            Configs.Configurations.HideInpaintImages = HideInpaintImages;
+            Configs.Configurations.HideResizeImages = HideResizeImages;
+            Configs.Configurations.HideUpscaleImages = HideUpscaleImages;
+            Configs.Configurations.HideGenerateTags = HideGenerateTags;
+            Configs.Configurations.HideProcessCaptions = HideProcessCaptions;
+            Configs.Configurations.HideProcessTags = HideProcessTags;
+            Configs.Configurations.HideTagEditor = HideTagEditor;
+            Configs.Configurations.HideExtractSubset = HideExtractSubset;
+            Configs.Configurations.HidePromptGenerator = HidePromptGenerator;
+            Configs.Configurations.HideMetadataViewer = HideMetadataViewer;
 
             await Configs.SaveConfigurationsAsync();
             Logger.SetLatestLogMessage($"Settings saved!", LogMessageColor.Informational);

@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:DatasetProcessor.ViewModels"
 			 xmlns:local="clr-namespace:DatasetProcessor.src.Enums"
+             xmlns:converters="clr-namespace:DatasetProcessor.Converters"
              mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
              x:Class="DatasetProcessor.Views.MainView"
              x:DataType="vm:MainViewModel"			
@@ -11,6 +12,10 @@
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml" />
 	</Design.DesignStyle>
+
+	<UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </UserControl.Resources>
 	
 	<SplitView Background="{DynamicResource SecondarySurfaceDark}" 
 			   IsPaneOpen="True"
@@ -26,60 +31,74 @@
 				<Button Click="Button_Click"
 						Content="Gallery Page"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Gallery}"/>
+						CommandParameter="{x:Static local:AppPages.Gallery}"
+						IsVisible="{Binding HideGalleryPage, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Sort Images"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Sort_Images}"/>
+						CommandParameter="{x:Static local:AppPages.Sort_Images}"
+						IsVisible="{Binding HideSortImages, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Content Aware Crop"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Content_Aware_Crop}"/>
+						CommandParameter="{x:Static local:AppPages.Content_Aware_Crop}"
+						IsVisible="{Binding HideContentAwareCrop, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Manual Crop"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Manual_Crop}"/>
+						CommandParameter="{x:Static local:AppPages.Manual_Crop}"
+						IsVisible="{Binding HideManualCrop, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Inpaint Images"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Inpaint_Images}"/>
+						CommandParameter="{x:Static local:AppPages.Inpaint_Images}"
+						IsVisible="{Binding HideInpaintImages, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Resize Images"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Resize_Images}"/>
+						CommandParameter="{x:Static local:AppPages.Resize_Images}"
+						IsVisible="{Binding HideResizeImages, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Upscale Images"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Upscale_Images}"/>				
+						CommandParameter="{x:Static local:AppPages.Upscale_Images}"
+						IsVisible="{Binding HideUpscaleImages, Converter={StaticResource InverseBooleanConverter}}"/>				
 				<Button Click="Button_Click"
 						Content="Generate Tags"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Tag_Generation}"/>
+						CommandParameter="{x:Static local:AppPages.Tag_Generation}"
+						IsVisible="{Binding HideGenerateTags, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Process Captions"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Process_Captions}"/>
+						CommandParameter="{x:Static local:AppPages.Process_Captions}"
+						IsVisible="{Binding HideProcessCaptions, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Process Tags"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Process_Tags}"/>
+						CommandParameter="{x:Static local:AppPages.Process_Tags}"
+						IsVisible="{Binding HideProcessTags, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Tag/Caption Editor"
 						Command="{Binding NavigateToTagEditorViewCommand}"
-						CommandParameter="{x:Static local:AppPages.Tag_Editor}"/>
+						CommandParameter="{x:Static local:AppPages.Tag_Editor}"
+						IsVisible="{Binding HideTagEditor, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Extract Subset"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Extract_Subset}"/>
+						CommandParameter="{x:Static local:AppPages.Extract_Subset}"
+						IsVisible="{Binding HideExtractSubset, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"
 						Content="Dataset Prompt Gen"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Prompt_Generator}"/>
+						CommandParameter="{x:Static local:AppPages.Prompt_Generator}"
+						IsVisible="{Binding HidePromptGenerator, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button x:Name="Metadata_ViewerButton"
 						Click="Button_Click"
 						Content="Metadata Viewer"
 						Command="{Binding NavigateToPageCommand}"
-						CommandParameter="{x:Static local:AppPages.Metadata_Viewer}"/>
+						CommandParameter="{x:Static local:AppPages.Metadata_Viewer}"
+						IsVisible="{Binding HideMetadataViewer, Converter={StaticResource InverseBooleanConverter}}"/>
 				<Button Click="Button_Click"	
 						Content="Settings"
 						Command="{Binding NavigateToPageCommand}"
