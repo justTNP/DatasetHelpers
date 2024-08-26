@@ -2,13 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:SmartData.Lib.Helpers;assembly=SmartData.Lib"
              x:Class="DatasetProcessor.Views.ManualCropView"
 			 mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="768"	
 			 Background="{DynamicResource SecondarySurfaceDark}">
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml"/>
 	</Design.DesignStyle>
-	<Grid RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto" 
+	<Grid RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto" 
 		  Background="Transparent">
 		<!-- INPUT FOLDER -->
 		<Grid Classes="gridSecondary" Grid.Row="0" ColumnDefinitions="auto, 10, *, 10, auto">
@@ -84,9 +85,18 @@
 				</Panel>
 			</Button>
 		</Grid>
+
+		<!-- ASPECT RATIO CROP AREA -->
+		<ComboBox Grid.Row="6"
+          HorizontalAlignment="Center"
+          Width="200"
+          Margin="0,10,0,0"
+          PlaceholderText="Select Aspect Ratio"
+          SelectedItem="{Binding AspectRatio}"
+          ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
 		
 		<!-- IMAGE PANEL -->
-		<Grid Grid.Row="6" Background="Transparent"
+		<Grid Grid.Row="8" Background="Transparent"
 			  ColumnDefinitions="50, 10, *, 10, 50"
 			  HorizontalAlignment="Center">
 			<!-- BACKWARDS BUTTONS -->
@@ -114,31 +124,35 @@
 			</Grid>
 
 			<!-- IMAGE DISPLAY -->
-			<Grid Classes="gridPrimary" Grid.Column="2"
-				  HorizontalAlignment="Stretch"
-				  MinWidth="256"
-				  MinHeight="256">
-				<Button Classes="emptyButton"
-						x:Name="CanvasButton"	
-						Width="{Binding ImageSize.X}"
-						Height="{Binding ImageSize.Y}"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Stretch"
-						PointerPressed="CanvasPressed"
-						PointerReleased="CanvasReleased"
-						PointerMoved="PointerMoving"
-						Margin="0"
-						Padding="0">
-					<Panel x:Name="CanvasPanel" 
-						   HorizontalAlignment="Stretch"
-						   VerticalAlignment="Stretch">
-						<Image HorizontalAlignment="Stretch"
-							   VerticalAlignment="Stretch"
-							   Stretch="UniformToFill"
-							   Source="{Binding SelectedImage, Mode=TwoWay}"/>
-					</Panel>
-				</Button>
-			</Grid>
+			<Grid Classes="gridPrimary" Grid.Row="6" Grid.Column="2"
+					HorizontalAlignment="Stretch"
+					MinWidth="256"
+					MinHeight="256">
+			<Button Classes="emptyButton"
+					x:Name="CanvasButton"    
+					Width="{Binding ImageSize.X}"
+					Height="{Binding ImageSize.Y}"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					PointerPressed="CanvasPressed"
+					PointerReleased="CanvasReleased"
+					PointerMoved="PointerMoving"
+					Margin="0"
+					Padding="0">
+				<Panel x:Name="CanvasPanel" 
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch">
+					<Image Source="{Binding SelectedImage, Mode=TwoWay}"
+						Stretch="UniformToFill"/>
+					<Canvas x:Name="CropCanvas"
+							Width="{Binding ImageSize.X}"
+							Height="{Binding ImageSize.Y}"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch">
+					</Canvas>
+				</Panel>
+			</Button>
+		</Grid>
 
 			<!-- FORWARD BUTTONS -->
 			<Grid Grid.Column="4" RowDefinitions="auto, 10, auto, 10, auto"
@@ -166,7 +180,7 @@
 		</Grid>
 
 		<!-- NOTE TEXT BOX -->
-		<Panel Grid.Row="8"
+		<Panel Grid.Row="12"
 			   Background="{DynamicResource SurfaceDark}">
 			<TextBlock HorizontalAlignment="Center"
 					   Margin="10"

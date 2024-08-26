@@ -2,12 +2,14 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Media;
-
+using CommunityToolkit.Mvvm.ComponentModel;
 using DatasetProcessor.ViewModels;
 
 using System;
 using System.ComponentModel;
 using System.Drawing;
+
+using SmartData.Lib.Enums;
 
 namespace DatasetProcessor.Views
 {
@@ -134,21 +136,79 @@ namespace DatasetProcessor.Views
                 _lines[i].StrokeThickness = 3;
             }
 
-            // TOP LINE
-            _lines[0].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
-            _lines[0].EndPoint = new Avalonia.Point(cursorPosition.X, _startingPosition.Y);
+            if (_viewModel.AspectRatio != AspectRatios.AspectRatioFree)
+            {
+                double aspectRatio = GetAspectRatio(_viewModel.AspectRatio);
+                double width = Math.Abs(cursorPosition.X - _startingPosition.X);
+                double height = Math.Abs(cursorPosition.Y - _startingPosition.Y);
 
-            // LEFT LINE
-            _lines[1].StartPoint = new Avalonia.Point(cursorPosition.X, _startingPosition.Y);
-            _lines[1].EndPoint = new Avalonia.Point(cursorPosition.X, cursorPosition.Y);
+                if (width / height > aspectRatio)
+                {
+                    height = width / aspectRatio;
+                }
+                else
+                {
+                    width = height * aspectRatio;
+                }
 
-            // BOTTOM LINE
-            _lines[2].StartPoint = new Avalonia.Point(_startingPosition.X, cursorPosition.Y);
-            _lines[2].EndPoint = new Avalonia.Point(cursorPosition.X, cursorPosition.Y);
+                Avalonia.Point endPosition;
+                if (cursorPosition.X < _startingPosition.X)
+                {
+                    if (cursorPosition.Y < _startingPosition.Y)
+                    {
+                        endPosition = new Avalonia.Point(_startingPosition.X - width, _startingPosition.Y - height);
+                    }
+                    else
+                    {
+                        endPosition = new Avalonia.Point(_startingPosition.X - width, _startingPosition.Y + height);
+                    }
+                }
+                else
+                {
+                    if (cursorPosition.Y < _startingPosition.Y)
+                    {
+                        endPosition = new Avalonia.Point(_startingPosition.X + width, _startingPosition.Y - height);
+                    }
+                    else
+                    {
+                        endPosition = new Avalonia.Point(_startingPosition.X + width, _startingPosition.Y + height);
+                    }
+                }
 
-            // RIGHT LINE
-            _lines[3].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
-            _lines[3].EndPoint = new Avalonia.Point(_startingPosition.X, cursorPosition.Y);
+                // TOP LINE
+                _lines[0].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
+                _lines[0].EndPoint = new Avalonia.Point(endPosition.X, _startingPosition.Y);
+
+                // LEFT LINE
+                _lines[1].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
+                _lines[1].EndPoint = new Avalonia.Point(_startingPosition.X, endPosition.Y);
+
+                // BOTTOM LINE
+                _lines[2].StartPoint = new Avalonia.Point(_startingPosition.X, endPosition.Y);
+                _lines[2].EndPoint = new Avalonia.Point(endPosition.X, endPosition.Y);
+
+                // RIGHT LINE
+                _lines[3].StartPoint = new Avalonia.Point(endPosition.X, _startingPosition.Y);
+                _lines[3].EndPoint = new Avalonia.Point(endPosition.X, endPosition.Y);
+            }
+            else
+            {
+                // TOP LINE
+                _lines[0].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
+                _lines[0].EndPoint = new Avalonia.Point(cursorPosition.X, _startingPosition.Y);
+
+                // LEFT LINE
+                _lines[1].StartPoint = new Avalonia.Point(_startingPosition.X, _startingPosition.Y);
+                _lines[1].EndPoint = new Avalonia.Point(_startingPosition.X, cursorPosition.Y);
+
+                // BOTTOM LINE
+                _lines[2].StartPoint = new Avalonia.Point(_startingPosition.X, cursorPosition.Y);
+                _lines[2].EndPoint = new Avalonia.Point(cursorPosition.X, cursorPosition.Y);
+
+                // RIGHT LINE
+                _lines[3].StartPoint = new Avalonia.Point(cursorPosition.X, _startingPosition.Y);
+                _lines[3].EndPoint = new Avalonia.Point(cursorPosition.X, cursorPosition.Y);
+            }
         }
 
         /// <summary>
@@ -159,6 +219,23 @@ namespace DatasetProcessor.Views
             _viewModel = DataContext as ManualCropViewModel;
             _viewModel.PropertyChanged += (sender, e) => ClearLines(sender, e);
             base.OnDataContextChanged(e);
+        }
+
+        private double GetAspectRatio(AspectRatios ratio)
+        {
+            return ratio switch 
+            {
+                AspectRatios.AspectRatio1x1 => 1.0,
+                AspectRatios.AspectRatio4x3 => 4.0 / 3.0,
+                AspectRatios.AspectRatio3x4 => 3.0 / 4.0,  
+                AspectRatios.AspectRatio3x2 => 3.0 / 2.0,
+                AspectRatios.AspectRatio2x3 => 2.0 / 3.0,
+                AspectRatios.AspectRatio16x9 => 16.0 / 9.0,
+                AspectRatios.AspectRatio9x16 => 9.0 / 16.0,
+                AspectRatios.AspectRatio13x19 => 13.0 / 19.0, 
+                AspectRatios.AspectRatio19x13 => 19.0 / 13.0,
+                _ => throw new ArgumentOutOfRangeException(nameof(ratio)),
+            };
         }
     }
 }

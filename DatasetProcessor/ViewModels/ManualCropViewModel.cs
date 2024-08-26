@@ -51,6 +51,9 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private Point _endingPosition;
 
+        [ObservableProperty]
+        private AspectRatios _aspectRatio;
+
         public ManualCropViewModel(IImageProcessorService imageProcessor, IFileManipulatorService fileManipulator,
             ILoggerService logger, IConfigsService configs) : base(logger, configs)
         {
@@ -239,7 +242,7 @@ namespace DatasetProcessor.ViewModels
 
             if (string.IsNullOrEmpty(OutputFolderPath))
             {
-                Logger.SetLatestLogMessage("You need to first select a folder for the output files! Image wont be saved.",
+                Logger.SetLatestLogMessage("You need to first select a folder for the output files! Image won't be saved.",
                     LogMessageColor.Warning);
                 return;
             }
@@ -248,27 +251,100 @@ namespace DatasetProcessor.ViewModels
             {
                 try
                 {
-                    if (_imageWasDownscaled)
-                    {
-                        // Create new variables so the program doesn't enter in an infinite loop calling OnEndingPositionChanged.
-                        Point startingPosition = new Point((int)(StartingPosition.X / (ImageSize.X / (float)SelectedImage.Size.Width)),
-                            (int)(StartingPosition.Y / (ImageSize.Y / (float)SelectedImage.Size.Height)));
-                        Point endingPosition = new Point((int)(EndingPosition.X / (ImageSize.X / (float)SelectedImage.Size.Width)),
-                            (int)(EndingPosition.Y / (ImageSize.Y / (float)SelectedImage.Size.Height)));
+                    Point startingPosition = StartingPosition;
+                    Point endingPosition;
 
-                        await _imageProcessor.CropImageAsync(ImageFiles[SelectedItemIndex], OutputFolderPath, startingPosition, endingPosition);
+                    if (AspectRatio != AspectRatios.AspectRatioFree)
+                    {
+                        double aspectRatio = GetAspectRatio(AspectRatio);
+                        double rectWidth = Math.Abs(EndingPosition.X - startingPosition.X);
+                        double rectHeight = Math.Abs(EndingPosition.Y - startingPosition.Y);
+
+                        if (rectWidth / rectHeight > aspectRatio)
+                        {
+                            rectHeight = rectWidth / aspectRatio;
+                        }
+                        else
+                        {
+                            rectWidth = rectHeight * aspectRatio;
+                        }
+
+                        if (EndingPosition.X < startingPosition.X)
+                        {
+                            if (EndingPosition.Y < startingPosition.Y)
+                            {
+                                endingPosition = new Point(startingPosition.X - (int)rectWidth, startingPosition.Y - (int)rectHeight);
+                            }
+                            else
+                            {
+                                endingPosition = new Point(startingPosition.X - (int)rectWidth, startingPosition.Y + (int)rectHeight);
+                            }
+                        }
+                        else
+                        {
+                            if (EndingPosition.Y < startingPosition.Y)
+                            {
+                                endingPosition = new Point(startingPosition.X + (int)rectWidth, startingPosition.Y - (int)rectHeight);
+                            }
+                            else
+                            {
+                                endingPosition = new Point(startingPosition.X + (int)rectWidth, startingPosition.Y + (int)rectHeight);
+                            }
+                        }
                     }
                     else
                     {
-                        await _imageProcessor.CropImageAsync(ImageFiles[SelectedItemIndex], OutputFolderPath, StartingPosition, EndingPosition);
+                        endingPosition = EndingPosition;
                     }
+
+                    if (_imageWasDownscaled)
+                    {
+                        startingPosition = new Point((int)(startingPosition.X / (ImageSize.X / (float)SelectedImage.PixelSize.Width)),
+                            (int)(startingPosition.Y / (ImageSize.Y / (float)SelectedImage.PixelSize.Height)));
+                        endingPosition = new Point((int)(endingPosition.X / (ImageSize.X / (float)SelectedImage.PixelSize.Width)),
+                            (int)(endingPosition.Y / (ImageSize.Y / (float)SelectedImage.PixelSize.Height)));
+                    }
+
+                    // Check if the ending position is within the image display
+                    if (endingPosition.X < 0 || endingPosition.X > SelectedImage.PixelSize.Width ||
+                        endingPosition.Y < 0 || endingPosition.Y > SelectedImage.PixelSize.Height)
+                    {
+                        Logger.SetLatestLogMessage("The crop area extends outside the image display. Please adjust the crop area.",
+                            LogMessageColor.Warning);
+                        return;
+                    }
+
+                    // Ensure the starting position is always the top-left corner and the ending position is the bottom-right corner
+                    int cropX = Math.Min(startingPosition.X, endingPosition.X);
+                    int cropY = Math.Min(startingPosition.Y, endingPosition.Y);
+                    int cropWidth = Math.Abs(endingPosition.X - startingPosition.X);
+                    int cropHeight = Math.Abs(endingPosition.Y - startingPosition.Y);
+
+                    await _imageProcessor.CropImageAsync(ImageFiles[SelectedItemIndex], OutputFolderPath, new Point(cropX, cropY), new Point(cropX + cropWidth, cropY + cropHeight));
                 }
                 catch (ArgumentOutOfRangeException)
                 {
-                    Logger.SetLatestLogMessage("An error occured while trying to crop the image. Be sure the crop area is bigger than 0 pixels in both Width and Height!",
+                    Logger.SetLatestLogMessage("An error occurred while trying to crop the image. Be sure the crop area is bigger than 0 pixels in both Width and Height!",
                         LogMessageColor.Warning);
                 }
             });
+        }
+
+        private double GetAspectRatio(AspectRatios ratio)
+        {
+            return ratio switch
+            {
+                AspectRatios.AspectRatio1x1 => 1.0,
+                AspectRatios.AspectRatio4x3 => 4.0 / 3.0,
+                AspectRatios.AspectRatio3x4 => 3.0 / 4.0,
+                AspectRatios.AspectRatio3x2 => 3.0 / 2.0,
+                AspectRatios.AspectRatio2x3 => 2.0 / 3.0,
+                AspectRatios.AspectRatio16x9 => 16.0 / 9.0,
+                AspectRatios.AspectRatio9x16 => 9.0 / 16.0,
+                AspectRatios.AspectRatio13x19 => 13.0 / 19.0,
+                AspectRatios.AspectRatio19x13 => 19.0 / 13.0,
+                _ => throw new ArgumentOutOfRangeException(nameof(ratio)),
+            };
         }
     }
 }

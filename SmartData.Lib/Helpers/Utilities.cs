@@ -112,5 +112,10 @@ namespace SmartData.Lib.Helpers
         {
             return 1f / (1f + (float)Math.Exp(-x));
         }
+
+        /// <summary>
+        /// Gets an array of supported aspect ratios.
+        /// </summary>
+        public static AspectRatios[] AspectRatioValues => (AspectRatios[])Enum.GetValues(typeof(AspectRatios));
     }
 }
