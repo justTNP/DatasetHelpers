@@ -11,59 +11,62 @@
 	</Design.DesignStyle>
 	<Grid RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto" 
 		  Background="Transparent">
-		<!-- INPUT FOLDER -->
-		<Grid Classes="gridSecondary" Grid.Row="0" ColumnDefinitions="auto, 10, *, 10, auto">
-			<Button Grid.Column="0"
-					Content="Select input folder"
-					Width="180"
-					Height="40"
-					Command="{Binding SelectInputFolderCommand}"/>
-			<Label Grid.Column="2"
-				   Content="{Binding InputFolderPath}"
-				   HorizontalAlignment="Left"
-				   VerticalAlignment="Center"/>
-			<Button Grid.Column="4"
-					BorderThickness="0"
-					Width="40"
-					Height="40"
-					Command="{Binding OpenFolderInExplorerCommand}"
-					CommandParameter="{Binding InputFolderPath}">
-				<Panel>
-					<Image Source="{SvgImage /Assets/Icons/folder_opened.svg}"
-						   HorizontalAlignment="Stretch"
-						   VerticalAlignment="Stretch"
-						   Margin="1"/>
-				</Panel>
-			</Button>
-		</Grid>
-		<!-- OUTPUT FOLDER -->
-		<Grid Classes="gridSecondary" Grid.Row="2" ColumnDefinitions="auto, 10, *, 10, auto">
-			<Button Grid.Column="0"
-					Content="Select output folder"
-					Width="180"
-					Height="40"
-					Command="{Binding SelectOutputFolderCommand}"/>
-			<Label Grid.Column="2"
-				   Content="{Binding OutputFolderPath}"
-				   HorizontalAlignment="Left"
-				   VerticalAlignment="Center"/>
-			<Button Grid.Column="4"
-					BorderThickness="0"
-					Width="40"
-					Height="40"
-					Command="{Binding OpenFolderInExplorerCommand}"
-					CommandParameter="{Binding OutputFolderPath}">
-				<Panel>
-					<Image Source="{SvgImage /Assets/Icons/folder_opened.svg}"
-						   HorizontalAlignment="Stretch"
-						   VerticalAlignment="Stretch"
-						   Margin="1"/>
-				</Panel>
-			</Button>
-		</Grid>
+		<!-- INPUT AND OUTPUT FOLDER -->
+        <Grid Grid.Row="0" ColumnDefinitions="1*,10,1*">
+            <!-- INPUT FOLDER -->
+            <Grid Grid.Column="0" Classes="gridSecondary" ColumnDefinitions="auto, 10, *, 10, auto">
+                <Button Grid.Column="0"
+                        Content="Select input folder"
+                        Width="180"
+                        Height="40"
+                        Command="{Binding SelectInputFolderCommand}"/>
+                <Label Grid.Column="2"
+                       Content="{Binding InputFolderPath}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Button Grid.Column="4"
+                        BorderThickness="0"
+                        Width="40"
+                        Height="40"
+                        Command="{Binding OpenFolderInExplorerCommand}"
+                        CommandParameter="{Binding InputFolderPath}">
+                    <Panel>
+                        <Image Source="{SvgImage /Assets/Icons/folder_opened.svg}"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               Margin="1"/>
+                    </Panel>
+                </Button>
+            </Grid>
+            <!-- OUTPUT FOLDER -->
+            <Grid Grid.Column="2" Classes="gridSecondary" ColumnDefinitions="auto, 10, *, 10, auto">
+                <Button Grid.Column="0"
+                        Content="Select output folder"
+                        Width="180"
+                        Height="40"
+                        Command="{Binding SelectOutputFolderCommand}"/>
+                <Label Grid.Column="2"
+                       Content="{Binding OutputFolderPath}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"/>
+                <Button Grid.Column="4"
+                        BorderThickness="0"
+                        Width="40"
+                        Height="40"
+                        Command="{Binding OpenFolderInExplorerCommand}"
+                        CommandParameter="{Binding OutputFolderPath}">
+                    <Panel>
+                        <Image Source="{SvgImage /Assets/Icons/folder_opened.svg}"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"
+                               Margin="1"/>
+                    </Panel>
+                </Button>
+            </Grid>
+        </Grid>
 		
 		<!-- CURRENT FILE INFORMATION PANEL -->
-		<Grid Classes="gridSecondary" Grid.Row="4"
+		<Grid Classes="gridSecondary" Grid.Row="2"
 			  ColumnDefinitions="1*, 10, 1*, 10, 1*, 10, auto"
 			  Height="40">
 			<Label Grid.Column="0"
@@ -87,106 +90,104 @@
 		</Grid>
 
 		<!-- CROP SETTINGS -->
-		<Grid Grid.Row="6" RowDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
-			<CheckBox Grid.Row="0" Content="Allow multiple crops? Dimensions will be appended after the file name." IsChecked="{Binding EnableMultipleCrops}" />
-			
-			<Grid Grid.Row="2" ColumnDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="4" Spacing="10" HorizontalAlignment="Center">
+            <CheckBox Content="Allow multiple crops? Dimensions will be appended after the file name." 
+                      IsChecked="{Binding EnableMultipleCrops}" 
+                      HorizontalAlignment="Center"/>
+            
+            <Grid ColumnDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
                 <Label Grid.Column="0" Content="Image Size:" VerticalAlignment="Center" />
                 <Slider Grid.Column="2" Width="200" Minimum="512" Maximum="1024" Value="{Binding HeightScale}" />
                 <Label Grid.Column="4" Content="{Binding HeightScaleString}" VerticalAlignment="Center" />
             </Grid>
-			
-			<ComboBox Grid.Row="4" 
-					HorizontalAlignment="Center"
-					Width="200"
-					PlaceholderText="Select Aspect Ratio"
-					SelectedItem="{Binding AspectRatio}"
-					ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
-		</Grid>
-		
-		<!-- IMAGE PANEL -->
-		<Grid Grid.Row="10" Background="Transparent"
-			  ColumnDefinitions="50, 10, *, 10, 50"
-			  HorizontalAlignment="Center">
-			<!-- BACKWARDS BUTTONS -->
-			<Grid Grid.Column="0" RowDefinitions="auto, 10, auto, 10, auto"
-				  VerticalAlignment="Center"
-				  Background="Transparent">
-				<Button Grid.Row="0"
-						Content="&lt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="-1"/>
-				<Button Grid.Row="2"
-						Content="&lt;&lt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="-10"/>
-				<Button Grid.Row="4"
-						Content="&lt;&lt;&lt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="-100"/>
-			</Grid>
-
-			<!-- IMAGE DISPLAY -->
-			<Grid Classes="gridPrimary" Grid.Row="6" Grid.Column="2"
-					HorizontalAlignment="Stretch"
-					MinWidth="256"
-					MinHeight="256">
-			<Button Classes="emptyButton"
-					x:Name="CanvasButton"    
-					Width="{Binding ImageSize.X}"
-					Height="{Binding ImageSize.Y}"
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Stretch"
-					PointerPressed="CanvasPressed"
-					PointerReleased="CanvasReleased"
-					PointerMoved="PointerMoving"
-					Margin="0"
-					Padding="0">
-				<Panel x:Name="CanvasPanel" 
-					HorizontalAlignment="Stretch"
-					VerticalAlignment="Stretch">
-					<Image Source="{Binding SelectedImage, Mode=TwoWay}"
-						Stretch="UniformToFill"/>
-					<Canvas x:Name="CropCanvas"
-							Width="{Binding ImageSize.X}"
-							Height="{Binding ImageSize.Y}"
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Stretch">
-					</Canvas>
-				</Panel>
-			</Button>
-		</Grid>
-
-			<!-- FORWARD BUTTONS -->
-			<Grid Grid.Column="4" RowDefinitions="auto, 10, auto, 10, auto"
-				  VerticalAlignment="Center"
-				  Background="Transparent">
-				<Button Grid.Row="0"
-						Content="&gt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="1"/>
-				<Button Grid.Row="2"
-						Content="&gt;&gt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="10"/>
-				<Button Grid.Row="4"
-						Content="&gt;&gt;&gt;"
-						Height="50"
-						Width="50"
-						Command="{Binding GoToItemCommand}"
-						CommandParameter="100"/>
-			</Grid>
-		</Grid>
+            
+            <!-- New Grid for ComboBox and Navigation Buttons -->
+            <Grid ColumnDefinitions="Auto,10,Auto,10,Auto,20,*,20,Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
+                <!-- BACKWARD BUTTONS -->
+                <Button Grid.Column="0"
+                        Content="&lt;&lt;&lt;"
+                        Height="40"
+                        Width="60"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="-100"/>
+                <Button Grid.Column="2"
+                        Content="&lt;&lt;"
+                        Height="40"
+                        Width="50"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="-10"/>
+                <Button Grid.Column="4"
+                        Content="&lt;"
+                        Height="40"
+                        Width="40"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="-1"/>
+                
+                <!-- ASPECT RATIO COMBOBOX -->
+                <ComboBox Grid.Column="6"
+                          Width="200"
+                          VerticalAlignment="Center"
+                          PlaceholderText="Select Aspect Ratio"
+                          SelectedItem="{Binding AspectRatio}"
+                          ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
+                
+                <!-- FORWARD BUTTONS -->
+                <Button Grid.Column="8"
+                        Content="&gt;"
+                        Height="40"
+                        Width="40"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="1"/>
+                <Button Grid.Column="10"
+                        Content="&gt;&gt;"
+                        Height="40"
+                        Width="50"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="10"/>
+                <Button Grid.Column="12"
+                        Content="&gt;&gt;&gt;"
+                        Height="40"
+                        Width="60"
+                        Command="{Binding GoToItemCommand}"
+                        CommandParameter="100"/>
+            </Grid>
+        </StackPanel>
+        
+        <!-- IMAGE PANEL -->
+        <Grid Grid.Row="10" Background="Transparent"
+              ColumnDefinitions="*, 10, *"
+              HorizontalAlignment="Center">
+            <!-- IMAGE DISPLAY -->
+            <Grid Classes="gridPrimary" Grid.Column="1"
+                    HorizontalAlignment="Stretch"
+                    MinWidth="256"
+                    MinHeight="256">
+                <Button Classes="emptyButton"
+                        x:Name="CanvasButton"    
+                        Width="{Binding ImageSize.X}"
+                        Height="{Binding ImageSize.Y}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        PointerPressed="CanvasPressed"
+                        PointerReleased="CanvasReleased"
+                        PointerMoved="PointerMoving"
+                        Margin="0"
+                        Padding="0">
+                    <Panel x:Name="CanvasPanel" 
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch">
+                        <Image Source="{Binding SelectedImage, Mode=TwoWay}"
+                            Stretch="UniformToFill"/>
+                        <Canvas x:Name="CropCanvas"
+                                Width="{Binding ImageSize.X}"
+                                Height="{Binding ImageSize.Y}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch">
+                        </Canvas>
+                    </Panel>
+                </Button>
+            </Grid>
+        </Grid>
 
 		<!-- NOTE TEXT BOX -->
 		<Panel Grid.Row="12"
