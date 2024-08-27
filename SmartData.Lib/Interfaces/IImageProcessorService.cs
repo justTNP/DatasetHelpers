@@ -34,6 +34,6 @@ namespace SmartData.Lib.Interfaces
         public MemoryStream CreateImageMask(int width, int height);
         public MemoryStream DrawCircleOnMask(MemoryStream maskStream, Point position, float radius, Color color);
         public Task<List<string>> ReadImageMetadataAsync(Stream imageStream);
-        public Task CropImageAsync(string inputPath, string outputPath, System.Drawing.Point startingPosition, System.Drawing.Point endingPosition);
+        public Task CropImageAsync(string inputPath, string outputPath, System.Drawing.Point startingPosition, System.Drawing.Point endingPosition, bool EnableMultipleCrops);
     }
 }

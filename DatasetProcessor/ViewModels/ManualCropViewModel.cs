@@ -54,6 +54,9 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private AspectRatios _aspectRatio;
 
+        [ObservableProperty]
+        private bool _enableMultipleCrops;
+
         public ManualCropViewModel(IImageProcessorService imageProcessor, IFileManipulatorService fileManipulator,
             ILoggerService logger, IConfigsService configs) : base(logger, configs)
         {
@@ -320,7 +323,7 @@ namespace DatasetProcessor.ViewModels
                     int cropWidth = Math.Abs(endingPosition.X - startingPosition.X);
                     int cropHeight = Math.Abs(endingPosition.Y - startingPosition.Y);
 
-                    await _imageProcessor.CropImageAsync(ImageFiles[SelectedItemIndex], OutputFolderPath, new Point(cropX, cropY), new Point(cropX + cropWidth, cropY + cropHeight));
+                    await _imageProcessor.CropImageAsync(ImageFiles[SelectedItemIndex], OutputFolderPath, new Point(cropX, cropY), new Point(cropX + cropWidth, cropY + cropHeight), EnableMultipleCrops);
                 }
                 catch (ArgumentOutOfRangeException)
                 {
@@ -345,6 +348,26 @@ namespace DatasetProcessor.ViewModels
                 AspectRatios.AspectRatio19x13 => 19.0 / 13.0,
                 _ => throw new ArgumentOutOfRangeException(nameof(ratio)),
             };
+        }
+        private string GenerateFileName(string originalFileName, int width, int height)
+        {
+            if (!EnableMultipleCrops)
+            {
+                return originalFileName;
+            }
+
+            string baseFileName = $"{originalFileName}-{width}x{height}";
+            string fullPath = Path.Combine(OutputFolderPath, $"{baseFileName}{Path.GetExtension(ImageFiles[SelectedItemIndex])}");
+            int counter = 1;
+
+            while (File.Exists(fullPath))
+            {
+                string newFileName = $"{baseFileName}-{counter}";
+                fullPath = Path.Combine(OutputFolderPath, $"{newFileName}{Path.GetExtension(ImageFiles[SelectedItemIndex])}");
+                counter++;
+            }
+
+            return Path.GetFileNameWithoutExtension(fullPath);
         }
     }
 }

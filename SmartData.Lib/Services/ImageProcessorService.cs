@@ -996,7 +996,7 @@ namespace SmartData.Lib.Services
         /// and saves the cropped image to the output path. The crop region is defined by the rectangle formed
         /// by the starting and ending positions.
         /// </remarks>
-        public async Task CropImageAsync(string inputPath, string outputPath, System.Drawing.Point startingPosition, System.Drawing.Point endingPosition)
+        public async Task CropImageAsync(string inputPath, string outputFolder, System.Drawing.Point startingPosition, System.Drawing.Point endingPosition, bool enableMultipleCrops = false)
         {
             using (Image<Rgba32> image = await Image.LoadAsync<Rgba32>(_decoderOptions, inputPath))
             {
@@ -1016,8 +1016,36 @@ namespace SmartData.Lib.Services
                 image.Mutate(image => image.Crop(cropArea));
 
                 image.Mutate(image => image.BackgroundColor(Color.White));
-                string fileName = Path.GetFileNameWithoutExtension(inputPath);
-                await image.SaveAsJpegAsync(Path.ChangeExtension(Path.Combine(outputPath, fileName), ".jpeg"), _jpegEncoder);
+                
+                string originalFileName = Path.GetFileNameWithoutExtension(inputPath);
+                string fileExtension = Path.GetExtension(inputPath);
+                string outputFileName;
+
+                if (enableMultipleCrops)
+                {
+                    string baseFileName = $"{originalFileName}-{cropArea.Width}x{cropArea.Height}";
+                    string fullPath = Path.Combine(outputFolder, $"{baseFileName}{fileExtension}");
+                    int counter = 1;
+
+                    while (File.Exists(fullPath))
+                    {
+                        string newFileName = $"{baseFileName}-{counter}";
+                        fullPath = Path.Combine(outputFolder, $"{newFileName}{fileExtension}");
+                        counter++;
+                    }
+
+                    outputFileName = Path.GetFileNameWithoutExtension(fullPath);
+                }
+                else
+                {
+                    outputFileName = originalFileName;
+                }
+
+                // Ensure the directory exists
+                Directory.CreateDirectory(outputFolder);
+
+                string outputPath = Path.Combine(outputFolder, $"{outputFileName}{fileExtension}");
+                await image.SaveAsJpegAsync(outputPath, _jpegEncoder);
             }
         }
 

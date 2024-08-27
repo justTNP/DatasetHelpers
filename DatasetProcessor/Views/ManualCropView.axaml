@@ -87,16 +87,24 @@
 		</Grid>
 
 		<!-- ASPECT RATIO CROP AREA -->
-		<ComboBox Grid.Row="6"
-          HorizontalAlignment="Center"
-          Width="200"
-          Margin="0,10,0,0"
-          PlaceholderText="Select Aspect Ratio"
-          SelectedItem="{Binding AspectRatio}"
-          ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
+		<Grid Grid.Row="6" RowDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
+			<CheckBox Grid.Row="0" Content="Allow multiple crops? The resulting resolution will be appended after the file name." IsChecked="{Binding EnableMultipleCrops}" />
+			
+			<Grid Grid.Row="2" ColumnDefinitions="Auto,10,Auto">
+				<Slider Grid.Column="0" Width="200" Minimum="0" Maximum="100" Value="{Binding SliderValue}" />
+				<TextBlock Grid.Column="2" Text="{Binding SliderValue, StringFormat='{}{0:F0}'}" VerticalAlignment="Center" />
+			</Grid>
+			
+			<ComboBox Grid.Row="4" 
+					HorizontalAlignment="Center"
+					Width="200"
+					PlaceholderText="Select Aspect Ratio"
+					SelectedItem="{Binding AspectRatio}"
+					ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
+		</Grid>
 		
 		<!-- IMAGE PANEL -->
-		<Grid Grid.Row="8" Background="Transparent"
+		<Grid Grid.Row="10" Background="Transparent"
 			  ColumnDefinitions="50, 10, *, 10, 50"
 			  HorizontalAlignment="Center">
 			<!-- BACKWARDS BUTTONS -->
