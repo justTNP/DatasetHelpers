@@ -86,14 +86,15 @@
 			</Button>
 		</Grid>
 
-		<!-- ASPECT RATIO CROP AREA -->
+		<!-- CROP SETTINGS -->
 		<Grid Grid.Row="6" RowDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
-			<CheckBox Grid.Row="0" Content="Allow multiple crops? The resulting resolution will be appended after the file name." IsChecked="{Binding EnableMultipleCrops}" />
+			<CheckBox Grid.Row="0" Content="Allow multiple crops? Dimensions will be appended after the file name." IsChecked="{Binding EnableMultipleCrops}" />
 			
-			<Grid Grid.Row="2" ColumnDefinitions="Auto,10,Auto">
-				<Slider Grid.Column="0" Width="200" Minimum="0" Maximum="100" Value="{Binding SliderValue}" />
-				<TextBlock Grid.Column="2" Text="{Binding SliderValue, StringFormat='{}{0:F0}'}" VerticalAlignment="Center" />
-			</Grid>
+			<Grid Grid.Row="2" ColumnDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
+                <Label Grid.Column="0" Content="Image Size:" VerticalAlignment="Center" />
+                <Slider Grid.Column="2" Width="200" Minimum="512" Maximum="1024" Value="{Binding HeightScale}" />
+                <Label Grid.Column="4" Content="{Binding HeightScaleString}" VerticalAlignment="Center" />
+            </Grid>
 			
 			<ComboBox Grid.Row="4" 
 					HorizontalAlignment="Center"

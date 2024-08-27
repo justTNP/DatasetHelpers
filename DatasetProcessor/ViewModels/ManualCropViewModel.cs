@@ -57,6 +57,11 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private bool _enableMultipleCrops;
 
+        [ObservableProperty]
+        private int _heightScale = 512;
+        [ObservableProperty]
+        private string _heightScaleString = "512px";
+
         public ManualCropViewModel(IImageProcessorService imageProcessor, IFileManipulatorService fileManipulator,
             ILoggerService logger, IConfigsService configs) : base(logger, configs)
         {
@@ -186,9 +191,8 @@ namespace DatasetProcessor.ViewModels
                 return;
             }
 
-            double widthScale = 768.0 / value.Size.Width;
-            double heightScale = 768.0 / value.Size.Height;
-            double scaleFactor = Math.Min(widthScale, heightScale);
+            double widthScale = HeightScale / (double)value.Size.Height * value.Size.Width;
+            double scaleFactor = Math.Min(widthScale / value.Size.Width, HeightScale / (double)value.Size.Height);
 
             if (scaleFactor < 1.0)
             {
@@ -199,6 +203,15 @@ namespace DatasetProcessor.ViewModels
             {
                 ImageSize = new Point((int)value.Size.Width, (int)value.Size.Height);
                 _imageWasDownscaled = false;
+            }
+        }
+
+        partial void OnHeightScaleChanged(int value)
+        {
+            HeightScaleString = $"{value}px";
+            if (SelectedImage != null)
+            {
+                OnSelectedImageChanged(SelectedImage);
             }
         }
 
