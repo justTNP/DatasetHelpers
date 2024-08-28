@@ -37,6 +37,10 @@ namespace DatasetProcessor.Views
                 };
                 CanvasPanel.Children.Add(_lines[i]);
             }
+
+            // Add KeyDown event handler
+            KeyDown += ManualCropView_KeyDown;
+            PointerPressed += ManualCropView_PointerPressed;
         }
 
         /// <summary>
@@ -216,9 +220,21 @@ namespace DatasetProcessor.Views
         /// </summary>
         protected override void OnDataContextChanged(EventArgs e)
         {
-            _viewModel = DataContext as ManualCropViewModel;
-            _viewModel.PropertyChanged += (sender, e) => ClearLines(sender, e);
             base.OnDataContextChanged(e);
+            _viewModel = DataContext as ManualCropViewModel;
+            if (_viewModel != null)
+            {
+                _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            }
+        }
+
+        private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(ManualCropViewModel.InputFolderPath) ||
+                e.PropertyName == nameof(ManualCropViewModel.OutputFolderPath))
+            {
+                Focus();
+            }
         }
 
         private double GetAspectRatio(AspectRatios ratio)
@@ -236,6 +252,51 @@ namespace DatasetProcessor.Views
                 AspectRatios.AspectRatio19x13 => 19.0 / 13.0,
                 _ => throw new ArgumentOutOfRangeException(nameof(ratio)),
             };
+        }
+
+        private void ManualCropView_KeyDown(object? sender, KeyEventArgs e)
+        {
+            if (_viewModel == null) return;
+
+            switch (e.Key)
+            {
+                case Key.F1:
+                    _viewModel.GoToItemCommand.Execute("-1");
+                    break;
+                case Key.F2:
+                    _viewModel.GoToItemCommand.Execute("1");
+                    break;
+                case Key.F3:
+                    _viewModel.GoToItemCommand.Execute("-10");
+                    break;
+                case Key.F4:
+                    _viewModel.GoToItemCommand.Execute("10");
+                    break;
+                case Key.F5:
+                    _viewModel.GoToItemCommand.Execute("-100");
+                    break;
+                case Key.F6:
+                    _viewModel.GoToItemCommand.Execute("100");
+                    break;
+            }
+        }
+
+        private void ManualCropView_PointerPressed(object? sender, PointerPressedEventArgs e)
+        {
+            if (_viewModel == null) return;
+
+            var properties = e.GetCurrentPoint(this).Properties;
+
+            if (properties.IsXButton1Pressed) // Mouse Button 4 (Back)
+            {
+                _viewModel.GoToItemCommand.Execute("-1");
+                e.Handled = true;
+            }
+            else if (properties.IsXButton2Pressed) // Mouse Button 5 (Forward)
+            {
+                _viewModel.GoToItemCommand.Execute("1");
+                e.Handled = true;
+            }
         }
     }
 }

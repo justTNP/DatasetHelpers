@@ -5,7 +5,8 @@
              xmlns:local="clr-namespace:SmartData.Lib.Helpers;assembly=SmartData.Lib"
              x:Class="DatasetProcessor.Views.ManualCropView"
 			 mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="768"	
-			 Background="{DynamicResource SecondarySurfaceDark}">
+			 Background="{DynamicResource SecondarySurfaceDark}"
+             Focusable="True">
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml"/>
 	</Design.DesignStyle>
