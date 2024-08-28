@@ -89,72 +89,49 @@
 			</Button>
 		</Grid>
 
-		<!-- CROP SETTINGS -->
-        <StackPanel Grid.Row="4" Spacing="10" HorizontalAlignment="Center">
-            <CheckBox Content="Allow multiple crops? Dimensions will be appended after the file name." 
+		<!-- FIRST ROW: Multiple Crops Checkbox and Image Size Slider -->
+        <Grid Grid.Row="4" ColumnDefinitions="Auto,20,Auto,10,Auto,10,Auto" 
+              HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Multiple Crops Checkbox -->
+            <CheckBox Grid.Column="0" Content="Allow multiple crops" 
                       IsChecked="{Binding EnableMultipleCrops}" 
-                      HorizontalAlignment="Center"/>
+                      VerticalAlignment="Center"/>
             
-            <Grid ColumnDefinitions="Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
-                <Label Grid.Column="0" Content="Image Size:" VerticalAlignment="Center" />
-                <Slider Grid.Column="2" Width="200" Minimum="512" Maximum="1024" Value="{Binding HeightScale}" />
-                <Label Grid.Column="4" Content="{Binding HeightScaleString}" VerticalAlignment="Center" />
-            </Grid>
+            <!-- Image Size Controls -->
+            <Label Grid.Column="2" Content="Image Size:" VerticalAlignment="Center" />
+            <Slider Grid.Column="4" Width="200" Minimum="512" Maximum="1024" 
+                    Value="{Binding HeightScale}" VerticalAlignment="Center" />
+            <Label Grid.Column="6" Content="{Binding HeightScaleString}" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- SECOND ROW: Navigation Buttons and Aspect Ratio -->
+        <Grid Grid.Row="6" ColumnDefinitions="Auto,10,Auto,10,Auto,20,Auto,20,Auto,10,Auto,10,Auto" 
+              HorizontalAlignment="Center" VerticalAlignment="Center">
+            <!-- Backward Navigation Buttons -->
+            <Button Grid.Column="0" Content="&lt;&lt;&lt;" Height="40" Width="60"
+                    Command="{Binding GoToItemCommand}" CommandParameter="-100"/>
+            <Button Grid.Column="2" Content="&lt;&lt;" Height="40" Width="50"
+                    Command="{Binding GoToItemCommand}" CommandParameter="-10"/>
+            <Button Grid.Column="4" Content="&lt;" Height="40" Width="40"
+                    Command="{Binding GoToItemCommand}" CommandParameter="-1"/>
             
-            <!-- New Grid for ComboBox and Navigation Buttons -->
-            <Grid ColumnDefinitions="Auto,10,Auto,10,Auto,20,*,20,Auto,10,Auto,10,Auto" HorizontalAlignment="Center">
-                <!-- BACKWARD BUTTONS -->
-                <Button Grid.Column="0"
-                        Content="&lt;&lt;&lt;"
-                        Height="40"
-                        Width="60"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="-100"/>
-                <Button Grid.Column="2"
-                        Content="&lt;&lt;"
-                        Height="40"
-                        Width="50"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="-10"/>
-                <Button Grid.Column="4"
-                        Content="&lt;"
-                        Height="40"
-                        Width="40"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="-1"/>
-                
-                <!-- ASPECT RATIO COMBOBOX -->
-                <ComboBox Grid.Column="6"
-                          Width="200"
-                          VerticalAlignment="Center"
-                          PlaceholderText="Select Aspect Ratio"
-                          SelectedItem="{Binding AspectRatio}"
-                          ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
-                
-                <!-- FORWARD BUTTONS -->
-                <Button Grid.Column="8"
-                        Content="&gt;"
-                        Height="40"
-                        Width="40"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="1"/>
-                <Button Grid.Column="10"
-                        Content="&gt;&gt;"
-                        Height="40"
-                        Width="50"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="10"/>
-                <Button Grid.Column="12"
-                        Content="&gt;&gt;&gt;"
-                        Height="40"
-                        Width="60"
-                        Command="{Binding GoToItemCommand}"
-                        CommandParameter="100"/>
-            </Grid>
-        </StackPanel>
+            <!-- Aspect Ratio ComboBox -->
+            <ComboBox Grid.Column="6" Width="200" VerticalAlignment="Center"
+                      PlaceholderText="Select Aspect Ratio"
+                      SelectedItem="{Binding AspectRatio}"
+                      ItemsSource="{x:Static local:Utilities.AspectRatioValues}"/>
+            
+            <!-- Forward Navigation Buttons -->
+            <Button Grid.Column="8" Content="&gt;" Height="40" Width="40"
+                    Command="{Binding GoToItemCommand}" CommandParameter="1"/>
+            <Button Grid.Column="10" Content="&gt;&gt;" Height="40" Width="50"
+                    Command="{Binding GoToItemCommand}" CommandParameter="10"/>
+            <Button Grid.Column="12" Content="&gt;&gt;&gt;" Height="40" Width="60"
+                    Command="{Binding GoToItemCommand}" CommandParameter="100"/>
+        </Grid>
         
         <!-- IMAGE PANEL -->
-        <Grid Grid.Row="10" Background="Transparent"
+        <Grid Grid.Row="8" Background="Transparent"
               ColumnDefinitions="*, 10, *"
               HorizontalAlignment="Center">
             <!-- IMAGE DISPLAY -->
@@ -190,14 +167,14 @@
         </Grid>
 
 		<!-- NOTE TEXT BOX -->
-		<Panel Grid.Row="12"
+		<Panel Grid.Row="10"
 			   Background="{DynamicResource SurfaceDark}">
 			<TextBlock HorizontalAlignment="Center"
 					   Margin="10"
 					   TextAlignment="Center"
 					   FontWeight="Light"
 					   Foreground="{DynamicResource Secondary}"
-					   Text="Note: Hold the Right-click button and drag to select the crop area; release the Right-click button to save the cropped image. &#xa;To cancel the crop operation, press the Left-click button while holding down Right-click button.&#xa;Cropped images will be automatically saved in the output folder using the original image file name. Selecting a new crop area will overwrite the existing cropped image." />
+					   Text="Note: Hold the Right-click button and drag to select the crop area; release the Right-click button to save the cropped image. &#xa;To cancel the crop operation, press the Left-click button while holding down Right-click button.&#xa;Cropped images will be automatically saved in the output folder using the original image file name. Selecting a new crop area will overwrite the existing cropped image.&#xa;If &quot;Allow multiple crops&quot; is checked, the output image's dimensions will be appended to the file name." />
 		</Panel>
 	</Grid>
 </UserControl>
