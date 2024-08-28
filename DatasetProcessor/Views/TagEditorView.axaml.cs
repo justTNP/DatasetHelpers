@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.Input;
 
 using DatasetProcessor.src.Classes;
 using DatasetProcessor.ViewModels;
@@ -12,6 +13,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace DatasetProcessor.Views
 {
@@ -43,6 +45,7 @@ namespace DatasetProcessor.Views
 
         /// <summary>
         /// Handles the TextChanged event of the EditorHighlight control to update tag highlighting.
+        /// TODO: Allow the user to change highlight colors in Settings.
         /// </summary>
         private void OnEditorHighlightTextChanged(object? sender, TextChangedEventArgs e)
         {
@@ -56,7 +59,16 @@ namespace DatasetProcessor.Views
             {
                 string[] tagsToHighlight = EditorHighlight.Text.Replace(", ", ",").Split(",");
 
-                EditorTags.SyntaxHighlighting = new TagsSyntaxHighlight(_highlightTextColor, tagsToHighlight);
+                List<Color> highlightColors = new List<Color>
+                {
+                    Color.FromArgb(255, 255, 179, 71),
+                    Color.FromArgb(255, 111, 125, 255),
+                    Color.FromArgb(255, 44, 247, 71),
+                    Color.FromArgb(255, 51, 255, 255),
+                    Color.FromArgb(255, 255, 51, 51)
+                };
+
+                EditorTags.SyntaxHighlighting = new TagsSyntaxHighlight(highlightColors, tagsToHighlight);
             }
         }
 

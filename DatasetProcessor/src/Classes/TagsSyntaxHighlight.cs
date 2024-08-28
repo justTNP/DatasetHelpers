@@ -6,6 +6,7 @@ using SmartData.Lib.Helpers;
 
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace DatasetProcessor.src.Classes
 {
@@ -29,24 +30,33 @@ namespace DatasetProcessor.src.Classes
         /// </summary>
         /// <param name="foregroundColor">The color used to highlight the specified tags.</param>
         /// <param name="tags">An array of tags to be highlighted.</param>
-        public TagsSyntaxHighlight(Color foregroundColor, string[] tags)
+        public TagsSyntaxHighlight(List<Color> highlightColors, string[] tags)
         {
             MainRuleSet = new HighlightingRuleSet();
 
-            for (int i = 0; i < tags.Length; i++)
+            string[] linesOfTags = string.Join(",", tags).Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < linesOfTags.Length; i++)
             {
-                if (tags[i].Length == 0 || string.IsNullOrEmpty(tags[i]))
+                string[] tagsInLine = linesOfTags[i].Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
+
+                Color lineColor = i < highlightColors.Count ? highlightColors[i] : highlightColors.Last();
+
+                for (int j = 0; j < tagsInLine.Length; j++)
                 {
-                    continue;
+                    string tag = tagsInLine[j].Trim();
+
+                    if (!string.IsNullOrEmpty(tag))
+                    {
+                        HighlightingRule customWordRule = new HighlightingRule()
+                        {
+                            Color = new HighlightingColor { Foreground = new SimpleHighlightingBrush(lineColor) },
+                            Regex = new Regex(@$"\b({Regex.Escape(tag)})\b", RegexOptions.IgnoreCase, Utilities.RegexTimeout)
+                        };
+
+                        MainRuleSet.Rules.Add(customWordRule);
+                    }
                 }
-
-                HighlightingRule customWordRule = new HighlightingRule()
-                {
-                    Color = new HighlightingColor { Foreground = new SimpleHighlightingBrush(foregroundColor) },
-                    Regex = new Regex(@$"\b({Regex.Escape(tags[i])})\b", RegexOptions.IgnoreCase, Utilities.RegexTimeout)
-                };
-
-                MainRuleSet.Rules.Add(customWordRule);
             }
         }
 

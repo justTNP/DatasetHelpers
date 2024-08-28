@@ -80,7 +80,8 @@
 		</Grid>
 		<!-- IMAGE PANEL -->
 		<Grid Grid.Row="6" Background="Transparent"
-			  ColumnDefinitions="50, 10, 1*, 10, 50, 10, 1*">
+			  ColumnDefinitions="50, 10, 1*, 10, 50, 10, 1*"
+			  RowDefinitions="*, 10">
 			<!-- BACKWARDS BUTTONS -->
 			<Grid Grid.Column="0" RowDefinitions="auto, 10, auto, 10, auto"
 				  VerticalAlignment="Center"
@@ -208,7 +209,7 @@
 								 x:Name="EditorHighlight"
 								 TextWrapping="Wrap"
 								 Background="Transparent"
-								 Watermark="Enter words you want to highlight (even if its just part of a tag), separated by commas. For example: 'tag1, tag2'. Leave blank if not applicable."
+								 Watermark="Enter words you want to highlight (even if its just part of a tag), separated by commas. For example: 'tag1, tag2'. Leave blank if not applicable. Add a line break to use different highlighting colors."
 								 Text="{Binding WordsToHighlight}"/>
 					</Grid>
 					<Label Grid.Row="6"

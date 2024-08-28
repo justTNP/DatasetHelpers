@@ -345,9 +345,9 @@ namespace DatasetProcessor.ViewModels
             try
             {
                 count = await Task.Run(() => _clipTokenizer.CountTokens(CurrentImageTags));
-                CurrentImageTokenCount = $"Token count: {count}/75";
+                CurrentImageTokenCount = $"Token count: {count}/225";
 
-                if (count < 75)
+                if (count < 225)
                 {
                     TokenTextColor = new SolidColorBrush(Colors.LightGreen);
                 }
