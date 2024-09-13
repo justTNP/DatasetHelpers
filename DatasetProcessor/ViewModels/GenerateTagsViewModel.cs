@@ -49,9 +49,16 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private bool _applyRedundancyRemoval;
         [ObservableProperty]
+        private bool _differentOutputFolder;
+        [ObservableProperty]
         private bool _isUiEnabled;
         [ObservableProperty]
         private bool _isCancelEnabled;
+
+        [ObservableProperty]
+        private string _inputFolderPathLabel = string.Empty;
+        [ObservableProperty]
+        private string _outputFolderPathLabel = string.Empty;
 
         public GenerateTagsViewModel(IFileManipulatorService fileManipulator, WDAutoTaggerService wDautoTagger,
             WDV3AutoTaggerService wDV3autoTagger, JoyTagAutoTaggerService joyTagautoTagger, WDV3LargeAutoTaggerService wDv3largeAutoTagger,
@@ -103,7 +110,8 @@ namespace DatasetProcessor.ViewModels
 
             InputFolderPath = _configs.Configurations.GenerateTagsConfigs.InputFolder;
             _fileManipulator.CreateFolderIfNotExist(InputFolderPath);
-            OutputFolderPath = _configs.Configurations.UpscaleImagesConfigs.OutputFolder;
+            DifferentOutputFolder = _configs.Configurations.GenerateTagsConfigs.DifferentOutputFolder;
+            OutputFolderPath = _configs.Configurations.GenerateTagsConfigs.OutputFolder;
             _fileManipulator.CreateFolderIfNotExist(OutputFolderPath);
             GeneratorModel = _configs.Configurations.GenerateTagsConfigs.AutoTaggerModel;
             Threshold = _configs.Configurations.GenerateTagsConfigs.PredictionsThreshold;
@@ -123,8 +131,20 @@ namespace DatasetProcessor.ViewModels
             if (!string.IsNullOrEmpty(result))
             {
                 InputFolderPath = result;
+                InputFolderPathLabel = EscapeUnderscores(result);
+
+                if(DifferentOutputFolder == false)
+                {
+                    OutputFolderPath = result;
+                    OutputFolderPathLabel = EscapeUnderscores(result);
+                }                
             }
         }
+
+        public string EscapeUnderscores(string content)
+        {
+            return content.Replace("_", "__");
+        }        
 
         [RelayCommand]
         private async Task SelectOutputFolderAsync()
@@ -133,6 +153,7 @@ namespace DatasetProcessor.ViewModels
             if (!string.IsNullOrEmpty(result))
             {
                 OutputFolderPath = result;
+                OutputFolderPathLabel = EscapeUnderscores(result);
             }
         }
 

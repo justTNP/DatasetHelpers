@@ -12,6 +12,9 @@ namespace Models.Configurations
         [JsonPropertyName("outputFolder")]
         public string OutputFolder { get; set; } = string.Empty;
 
+        [JsonPropertyName("differentOutputFolder")]
+        public bool DifferentOutputFolder { get; set; } = false;
+
         [JsonPropertyName("autoTaggerModel")]
         public AvailableModels AutoTaggerModel { get; set; } = AvailableModels.WDv3;
 

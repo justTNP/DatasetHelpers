@@ -11,7 +11,7 @@
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml"/>
 	</Design.DesignStyle>
-	<Grid RowDefinitions="auto, 10, auto, 10, auto, auto, auto, 10, auto, 10, auto, 10, auto, 30, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto"
+	<Grid RowDefinitions="auto, 10, auto, auto, 10, auto, 10, auto, auto, auto, 10, auto, 10, auto, 10, auto, 30, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto"
 		  Background="Transparent">
 		<!-- INPUT FOLDER -->
 		<Grid Classes="gridSecondary" Grid.Row="0" ColumnDefinitions="auto, 10, *, 10, auto">
@@ -21,7 +21,7 @@
 					Height="40"
 					Command="{Binding SelectInputFolderCommand}"/>
 			<Label Grid.Column="2"
-				   Content="{Binding InputFolderPath}"
+				   Content="{Binding InputFolderPathLabel}"
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"/>
 			<Button Grid.Column="4"
@@ -38,15 +38,25 @@
 				</Panel>
 			</Button>
 		</Grid>
+		<!-- DIFFERENT OUTPUT FOLDER CHECKBOX -->
+		<Panel Grid.Row="2"
+			   Background="{DynamicResource SurfaceLighterDark}">
+			<CheckBox HorizontalAlignment="Left"
+					  x:Name="OutputFolderPathVisibility"
+					  Margin="10"
+					  IsChecked="{Binding DifferentOutputFolder}"
+					  Content="Different output folder as input?">
+			</CheckBox>
+		</Panel>
 		<!-- OUTPUT FOLDER -->
-		<Grid Classes="gridSecondary" Grid.Row="2" ColumnDefinitions="auto, 10, *, 10, auto">
+		<Grid Classes="gridSecondary" Grid.Row="3" ColumnDefinitions="auto, 10, *, 10, auto" IsVisible="{Binding ElementName=OutputFolderPathVisibility, Path=IsChecked}">
 			<Button Grid.Column="0"
 					Content="Select output folder"
 					Width="180"
 					Height="40"
 					Command="{Binding SelectOutputFolderCommand}"/>
 			<Label Grid.Column="2"
-				   Content="{Binding OutputFolderPath}"
+				   Content="{Binding OutputFolderPathLabel}"
 				   HorizontalAlignment="Left"
 				   VerticalAlignment="Center"/>
 			<Button Grid.Column="4"
@@ -65,7 +75,7 @@
 		</Grid>
 		<!-- MODEL DROPBOX -->
 		<Grid Classes="gridSecondary"
-			  Grid.Row="4"
+			  Grid.Row="5"
 			  MinHeight="36"
 			  Margin="0,0,0,-1"
 			  ColumnDefinitions="auto, 10, *, 10, auto">
@@ -82,7 +92,7 @@
 		</Grid>
 		<!-- THRESHOLD SLIDER -->
 		<Grid Classes="gridSecondary"
-				  Grid.Row="6"
+				  Grid.Row="7"
 				  ColumnDefinitions="auto, 10, *, 10, auto">
 			<Label Grid.Column="0"
 				   Content="Threshold for predictions:"/>
@@ -96,7 +106,7 @@
 				   Content="{Binding Threshold}"/>
 		</Grid>
 		<!-- REDUNDANCY REMOVAL CHECKBOX -->
-		<Panel Grid.Row="8"
+		<Panel Grid.Row="9"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -105,7 +115,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- APPEND GENERATED CAPTIONS CHECKBOX -->
-		<Panel Grid.Row="10"
+		<Panel Grid.Row="11"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -114,7 +124,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- WEIGHTED CAPTIONS CHECKBOX -->
-		<Panel Grid.Row="12"
+		<Panel Grid.Row="13"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -123,7 +133,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- NOTE TEXT BOX -->
-		<Panel Grid.Row="14"
+		<Panel Grid.Row="15"
 			   Background="{DynamicResource SurfaceDark}">
 			<TextBlock HorizontalAlignment="Center"
 					   Margin="10"
@@ -132,15 +142,15 @@
 					   Foreground="{DynamicResource Secondary}"
 					   Text="Note: Low Threshold values can capture false positives and make it harder for your model to learn.&#xa;If your dataset is big, like 300+ images, consider using a higher threshold value like 0.5-0.6 to avoid too many false positives.&#xa;You can also use 2 or more models to generate tags at a higher threshold value, like 0.6+, and append the generated tags to the .txt files.&#xa;&#xa;&#xa;AVAILABLE MODELS ARE:&#xa;WD 1.4 v2: Great for anime and general style of artwork. Suggested Threshold is 0.40-0.50.&#xa;WD v3: A model in the WD family with 2k more total tags over WD 1.4 v2. Suggested Threshold is 0.40-0.50.&#xa;WD v3 Large: Latest WD model with more training images and newer tags. Suggested Threshold is 0.25-0.50.&#xa;JoyTag: Great for anime and general type of artwork and can also work quite well with photos. Suggested Threshold: 0.35-0.4.&#xa;Z3D E621: Good for artwork themed around furries. I haven't tested this model extensively yet, but a value of 0.4-0.5 is probably a safe bet." />
 		</Panel>
-		<Separator Grid.Row="16"/>
+		<Separator Grid.Row="17"/>
 		<!-- CURRENTLY PROCESSING -->
-		<Label Grid.Row="18"
+		<Label Grid.Row="19"
 			   Content="{Binding PredictionProgress.TotalFiles, StringFormat='Found {0} images.'}"/>
 		<!-- ELAPSED TIME -->
-		<Label Grid.Row="20"
+		<Label Grid.Row="21"
 			   Content="{Binding ElapsedTime, StringFormat='Generation elapsed time: {0:hh\\:mm\\:ss\\.fff}'}"/>
 		<!-- GENERATE BUTTON -->
-		<Grid Grid.Row="22"
+		<Grid Grid.Row="23"
 			  ColumnDefinitions="auto, 10, auto"
 			  HorizontalAlignment="Center">
 			<Button Width="200"
@@ -154,10 +164,10 @@
 					Command="{Binding CancelTaskCommand}"/>
 		</Grid>		
 		<!-- PROGRESS BAR -->
-		<ProgressBar Grid.Row="24"
+		<ProgressBar Grid.Row="25"
 					 Value="{Binding PredictionProgress.PercentComplete}"/>
 		<!-- TASK STATUS -->
-		<Label Grid.Row="26" 
+		<Label Grid.Row="28" 
 			   FontSize="22"
 			   Foreground="{DynamicResource Secondary}"
 			   Content="{Binding TaskStatusString}"/>
