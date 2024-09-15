@@ -45,6 +45,8 @@
 					  x:Name="OutputFolderPathVisibility"
 					  Margin="10"
 					  IsChecked="{Binding DifferentOutputFolder}"
+					  Command="{Binding DifferentOutputFolderCommand}"
+					  CommandParameter="{Binding DifferentOutputFolder}"
 					  Content="Different output folder as input?">
 			</CheckBox>
 		</Panel>

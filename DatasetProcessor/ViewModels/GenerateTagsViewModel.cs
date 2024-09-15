@@ -158,6 +158,17 @@ namespace DatasetProcessor.ViewModels
         }
 
         [RelayCommand]
+        private async Task DifferentOutputFolderAsync(bool value)
+        {
+            if (!value) {
+                OutputFolderPath = InputFolderPath;
+                OutputFolderPathLabel = InputFolderPathLabel;
+            }
+
+            await Task.CompletedTask;
+        }
+
+        [RelayCommand]
         private async Task MakePredictionsAsync()
         {
             IsUiEnabled = false;
