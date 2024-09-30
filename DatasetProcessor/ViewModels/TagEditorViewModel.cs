@@ -66,6 +66,29 @@ namespace DatasetProcessor.ViewModels
         private bool _showBlurredImage;
         private MemoryStream _currentImageMemoryStream = null;
 
+        [ObservableProperty]
+        private List<string> _highlightColors;
+
+        private Dictionary<string, string> ColorNameToHex { get; } = new Dictionary<string, string>
+        {
+            {"Orange", "#FFB347"},
+            {"Blue", "#6F7DFF"},
+            {"Green", "#2CF747"},
+            {"Cyan", "#33FFFF"},
+            {"Red", "#FF3333"},
+            {"Hot Pink", "#FF69B4"},
+            {"Medium Purple", "#9370DB"},
+            {"Light Sea Green", "#20B2AA"},
+            {"Gold", "#FFD700"},
+            {"Blue Violet", "#8A2BE2"},
+            {"Gray", "#7A7A79"}
+        };
+
+        public string GetHexFromColorName(string colorName)
+        {
+            return ColorNameToHex.TryGetValue(colorName, out string hexColor) ? hexColor : "#FFB347";
+        }
+
         /// <summary>
         /// Gets the current type of file being edited, either .txt or .caption.
         /// </summary>
@@ -151,6 +174,15 @@ namespace DatasetProcessor.ViewModels
             CurrentImageTokenCount = string.Empty;
 
             TokenTextColor = new SolidColorBrush(Colors.LightGreen);
+
+            HighlightColors = new List<string>
+            {
+                GetHexFromColorName(configs.Configurations.TagEditorConfigs.TagHighlightColor1),
+                GetHexFromColorName(configs.Configurations.TagEditorConfigs.TagHighlightColor2),
+                GetHexFromColorName(configs.Configurations.TagEditorConfigs.TagHighlightColor3),
+                GetHexFromColorName(configs.Configurations.TagEditorConfigs.TagHighlightColor4),
+                GetHexFromColorName(configs.Configurations.TagEditorConfigs.TagHighlightColor5)
+            };
         }
 
         /// <summary>

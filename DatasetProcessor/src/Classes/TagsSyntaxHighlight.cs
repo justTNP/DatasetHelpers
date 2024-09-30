@@ -40,18 +40,18 @@ namespace DatasetProcessor.src.Classes
             {
                 string[] tagsInLine = linesOfTags[i].Split(new[] { ',' }, System.StringSplitOptions.RemoveEmptyEntries);
 
-                Color lineColor = i < highlightColors.Count ? highlightColors[i] : highlightColors.Last();
+                Color lineColor = highlightColors[i % highlightColors.Count];
 
-                for (int j = 0; j < tagsInLine.Length; j++)
+                foreach (string tag in tagsInLine)
                 {
-                    string tag = tagsInLine[j].Trim();
+                    string trimmedTag = tag.Trim();
 
-                    if (!string.IsNullOrEmpty(tag))
+                    if (!string.IsNullOrEmpty(trimmedTag))
                     {
                         HighlightingRule customWordRule = new HighlightingRule()
                         {
                             Color = new HighlightingColor { Foreground = new SimpleHighlightingBrush(lineColor) },
-                            Regex = new Regex(@$"\b({Regex.Escape(tag)})\b", RegexOptions.IgnoreCase, Utilities.RegexTimeout)
+                            Regex = new Regex(@$"\b({Regex.Escape(trimmedTag)})\b", RegexOptions.IgnoreCase, Utilities.RegexTimeout)
                         };
 
                         MainRuleSet.Rules.Add(customWordRule);

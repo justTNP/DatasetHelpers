@@ -9,5 +9,20 @@ namespace Models.Configurations
 
         [JsonPropertyName("exactMatchesFiltering")]
         public bool ExactMatchesFiltering { get; set; } = false;
+
+        [JsonPropertyName("tagHighlightColor1")]
+        public string TagHighlightColor1 { get; set; } = "Orange";
+
+        [JsonPropertyName("tagHighlightColor2")]
+        public string TagHighlightColor2 { get; set; } = "Blue";
+
+        [JsonPropertyName("tagHighlightColor3")]
+        public string TagHighlightColor3 { get; set; } = "Green";
+
+        [JsonPropertyName("tagHighlightColor4")]
+        public string TagHighlightColor4 { get; set; } = "Cyan";
+
+        [JsonPropertyName("tagHighlightColor5")]
+        public string TagHighlightColor5 { get; set; } = "Red";
     }
 }

@@ -14,6 +14,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace DatasetProcessor.Views
 {
@@ -59,14 +60,9 @@ namespace DatasetProcessor.Views
             {
                 string[] tagsToHighlight = EditorHighlight.Text.Replace(", ", ",").Split(",");
 
-                List<Color> highlightColors = new List<Color>
-                {
-                    Color.FromArgb(255, 255, 179, 71),
-                    Color.FromArgb(255, 111, 125, 255),
-                    Color.FromArgb(255, 44, 247, 71),
-                    Color.FromArgb(255, 51, 255, 255),
-                    Color.FromArgb(255, 255, 51, 51)
-                };
+                List<Color> highlightColors = _viewModel.HighlightColors
+                    .Select(hexCode => Color.Parse(hexCode))
+                    .ToList();
 
                 EditorTags.SyntaxHighlighting = new TagsSyntaxHighlight(highlightColors, tagsToHighlight);
             }

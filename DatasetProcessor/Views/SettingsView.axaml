@@ -1051,98 +1051,117 @@
 		<Separator Grid.Row="19"
 						   Margin="0, 10, 0, 10"/>
 
-		<Grid Classes="gridSecondary" Grid.Row="20"
-			  RowDefinitions="auto, 12, auto"
-			  ColumnDefinitions="1*, 1*, 1*, 1*, 1*">
+		<Grid Classes="gridSecondary" Grid.Row="18"
+			RowDefinitions="auto, 12, auto"
+			ColumnDefinitions="1*, 1*, 1*, 1*, 1*">
 			<Label Grid.Row="0"
-				   Grid.Column="0"
-				   Grid.ColumnSpan="4"
-				   Content="Extract Subset Page Settings"
-				   FontSize="20"
-				   HorizontalAlignment="Left"
-				   Margin="10,0,0,0"/>
+				Grid.Column="0"
+				Grid.ColumnSpan="4"
+				Content="Tag Editor Page Settings"
+				FontSize="20"
+				HorizontalAlignment="Left"
+				Margin="10,0,0,0"/>
 			<Button Grid.Row="0"
 					Grid.Column="4"
 					BorderThickness="0"
 					Width="45"
 					Height="40"
 					Command="{Binding ToggleBoolCommand}"
-					CommandParameter="ShowExtractSubsetSettings"
+					CommandParameter="ShowEditorSettings"
 					HorizontalAlignment="Right"
 					Margin="0,0,12,0">
 				<Panel>
 					<Image Source="{SvgImage /Assets/Icons/hide.svg}"
-						   HorizontalAlignment="Stretch"
-						   VerticalAlignment="Stretch"
-						   Margin="1"/>
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Stretch"
+						Margin="1"/>
 				</Panel>
 			</Button>
 			<Separator Grid.Row="1"
-					   Grid.Column="0"
-					   Grid.ColumnSpan="5"/>
+					Grid.Column="0"
+					Grid.ColumnSpan="5"/>
 			<Border Grid.Row="3"
 					Grid.Column="0"
 					Grid.ColumnSpan="5"
 					Margin="12, 0, 12, 0"
-					IsVisible="{Binding ShowExtractSubsetSettings}"
+					IsVisible="{Binding ShowEditorSettings}"
 					BorderBrush="{DynamicResource PrimaryDark}"
 					BorderThickness="1">
 				<Grid Classes="gridPrimary"
-					  RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto"
-					  ColumnDefinitions="auto, 10, *">
+					RowDefinitions="auto, 10, auto, 10, auto"
+					ColumnDefinitions="auto, 10, *">
 					<Button Grid.Row="0"
 							Grid.Column="0"
 							Content="Select input folder"
 							Width="180"
 							HorizontalAlignment="Left"
-							Command="{Binding SelectExtractSubsetInputFolderCommand}"/>
+							Command="{Binding SelectEditorInputFolderCommand}"/>
 					<Label Grid.Row="0"
-						   Grid.Column="2"
-						   Content="{Binding ExtractSubsetInputFolder}"
-						   HorizontalAlignment="Left"/>
-					<Button Grid.Row="2"
-							Grid.Column="0"
-							Content="Select output folder"
-							Width="180"
+						Grid.Column="2"
+						Content="{Binding EditorInputFolder}"
+						HorizontalAlignment="Left"/>
+					<Grid Grid.Row="2"
+						Grid.Column="0"
+						Grid.ColumnSpan="3" ColumnDefinitions="auto, *">
+						<CheckBox Grid.Column="0"
+								HorizontalAlignment="Left"
+								Margin="10, 0, 0, 0"
+								IsChecked="{Binding EditorExactMatches}"/>
+						<Label Grid.Column="1"
 							HorizontalAlignment="Left"
-							Command="{Binding SelectExtractSubsetOutputFolderCommand}"/>
-					<Label Grid.Row="2"
-						   Grid.Column="2"
-						   Content="{Binding ExtractSubsetOutputFolder}"
-						   HorizontalAlignment="Left"/>
-					<Grid Grid.Row="4"
-						  Grid.Column="0"
-						  Grid.ColumnSpan="3" ColumnDefinitions="auto, *">
-						<CheckBox Grid.Column="0"
-								  HorizontalAlignment="Left"
-								  Margin="10, 0, 0, 0"
-								  IsChecked="{Binding SearchTxt}"/>
-						<Label Grid.Column="1"
-							   HorizontalAlignment="Left"
-							   Content="Search txt files?"/>
+							Content="Exact matches when filtering?"/>
 					</Grid>
-					<Grid Grid.Row="6"
-						  Grid.Column="0"
-						  Grid.ColumnSpan="3" ColumnDefinitions="auto, *">
-						<CheckBox Grid.Column="0"
-								  HorizontalAlignment="Left"
-								  Margin="10, 0, 0, 0"
-								  IsChecked="{Binding SearchCaption}"/>
-						<Label Grid.Column="1"
-							   HorizontalAlignment="Left"
-							   Content="Search caption files?"/>
-					</Grid>
-					<Grid Grid.Row="8"
-						  Grid.Column="0"
-						  Grid.ColumnSpan="3" ColumnDefinitions="auto, *">
-						<CheckBox Grid.Column="0"
-								  HorizontalAlignment="Left"
-								  Margin="10, 0, 0, 0"
-								  IsChecked="{Binding ExactMatchesFiltering}"/>
-						<Label Grid.Column="1"
-							   HorizontalAlignment="Left"
-							   Content="Exact matches when filtering?"/>
-					</Grid>
+					
+					<!-- Tag Highlighter Color Picker -->
+					<StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3">
+						<TextBlock Text="Tag Highlight Colors" FontWeight="Bold" Margin="0,10,0,5"/>
+						<Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+							<TextBlock Grid.Row="0" Grid.Column="0" Text="Tag Highlight Color #1:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+							<ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding TagHighlightColor1}" Margin="0,0,0,5">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="1" Grid.Column="0" Text="Tag Highlight Color #2:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+							<ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding TagHighlightColor2}" Margin="0,0,0,5">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="2" Grid.Column="0" Text="Tag Highlight Color #3:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+							<ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding TagHighlightColor3}" Margin="0,0,0,5">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="3" Grid.Column="0" Text="Tag Highlight Color #4:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+							<ComboBox Grid.Row="3" Grid.Column="1" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding TagHighlightColor4}" Margin="0,0,0,5">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+
+							<TextBlock Grid.Row="4" Grid.Column="0" Text="Tag Highlight Color #5:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+							<ComboBox Grid.Row="4" Grid.Column="1" ItemsSource="{Binding ColorOptions}" SelectedItem="{Binding TagHighlightColor5}" Margin="0,0,0,5">
+								<ComboBox.ItemTemplate>
+									<DataTemplate>
+										<TextBlock Text="{Binding}"/>
+									</DataTemplate>
+								</ComboBox.ItemTemplate>
+							</ComboBox>
+						</Grid>
+					</StackPanel>
 				</Grid>
 			</Border>
 		</Grid>

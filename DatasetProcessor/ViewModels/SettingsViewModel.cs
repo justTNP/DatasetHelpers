@@ -1,4 +1,6 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using Avalonia.Media;
+
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 using SmartData.Lib.Enums;
@@ -6,6 +8,8 @@ using SmartData.Lib.Interfaces;
 
 using System;
 using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DatasetProcessor.ViewModels
 {
@@ -287,6 +291,51 @@ namespace DatasetProcessor.ViewModels
         private bool _showMetadataViewerSettings;
         // TODO: Add configs for Metadata page.
 
+        [ObservableProperty]
+        private string _tagHighlightColor1;
+
+        [ObservableProperty]
+        private string _tagHighlightColor2;
+
+        [ObservableProperty]
+        private string _tagHighlightColor3;
+
+        [ObservableProperty]
+        private string _tagHighlightColor4;
+
+        [ObservableProperty]
+        private string _tagHighlightColor5;
+
+        public List<string> ColorOptions { get; } = new List<string>
+        {
+            "Orange",
+            "Blue",
+            "Green",
+            "Cyan",
+            "Red",
+            "Hot Pink",
+            "Medium Purple",
+            "Light Sea Green",
+            "Gold",
+            "Blue Violet",
+            "Gray"
+        };
+
+        private Dictionary<string, string> ColorNameToHex { get; } = new Dictionary<string, string>
+        {
+            {"Orange", "#FFB347"},
+            {"Blue", "#6F7DFF"},
+            {"Green", "#2CF747"},
+            {"Cyan", "#33FFFF"},
+            {"Red", "#FF3333"},
+            {"Hot Pink", "#FF69B4"},
+            {"Medium Purple", "#9370DB"},
+            {"Light Sea Green", "#20B2AA"},
+            {"Gold", "#FFD700"},
+            {"Blue Violet", "#8A2BE2"},
+            {"Gray", "#7A7A79"}
+        };
+
         public SettingsViewModel(ILoggerService logger, IConfigsService configs) : base(logger, configs)
         {
             GalleryInputFolder = Configs.Configurations.GalleryConfigs.InputFolder;
@@ -372,6 +421,13 @@ namespace DatasetProcessor.ViewModels
             HideExtractSubset = Configs.Configurations.HideExtractSubset ?? false;
             HidePromptGenerator = Configs.Configurations.HidePromptGenerator ?? false;
             HideMetadataViewer = Configs.Configurations.HideMetadataViewer ?? false;
+
+            // Initialize tag highlighter colors
+            TagHighlightColor1 = Configs.Configurations.TagEditorConfigs.TagHighlightColor1;
+            TagHighlightColor2 = Configs.Configurations.TagEditorConfigs.TagHighlightColor2;
+            TagHighlightColor3 = Configs.Configurations.TagEditorConfigs.TagHighlightColor3;
+            TagHighlightColor4 = Configs.Configurations.TagEditorConfigs.TagHighlightColor4;
+            TagHighlightColor5 = Configs.Configurations.TagEditorConfigs.TagHighlightColor5;
         }
 
         [RelayCommand]
@@ -732,6 +788,13 @@ namespace DatasetProcessor.ViewModels
             Configs.Configurations.HidePromptGenerator = HidePromptGenerator;
             Configs.Configurations.HideMetadataViewer = HideMetadataViewer;
 
+            // Save tag highlighter colors
+            Configs.Configurations.TagEditorConfigs.TagHighlightColor1 = TagHighlightColor1;
+            Configs.Configurations.TagEditorConfigs.TagHighlightColor2 = TagHighlightColor2;
+            Configs.Configurations.TagEditorConfigs.TagHighlightColor3 = TagHighlightColor3;
+            Configs.Configurations.TagEditorConfigs.TagHighlightColor4 = TagHighlightColor4;
+            Configs.Configurations.TagEditorConfigs.TagHighlightColor5 = TagHighlightColor5;
+
             await Configs.SaveConfigurationsAsync();
             Logger.SetLatestLogMessage($"Settings saved!", LogMessageColor.Informational);
         }
@@ -765,6 +828,16 @@ namespace DatasetProcessor.ViewModels
         partial void OnGenerateTagsThresholdChanged(double value)
         {
             GenerateTagsThreshold = Math.Round(value, 2);
+        }
+
+        private string GetColorNameFromHex(string hexColor)
+        {
+            return ColorNameToHex.FirstOrDefault(x => x.Value == hexColor).Key ?? "Orange";
+        }
+
+        private string GetHexFromColorName(string colorName)
+        {
+            return ColorNameToHex.TryGetValue(colorName, out string hexColor) ? hexColor : "#FFB347";
         }
     }
 }
