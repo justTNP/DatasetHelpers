@@ -35,6 +35,11 @@ namespace DatasetProcessor.Views
         /// <summary>
         /// Initializes a new instance of the <see cref="TagEditorView"/> class.
         /// </summary>
+        public TagEditorView() : this(null)
+        {
+            // This constructor is required for design-time preview and runtime XAML loading
+        }
+
         public TagEditorView(IInputHooksService inputHooks)
         {
             _inputHooks = inputHooks;
