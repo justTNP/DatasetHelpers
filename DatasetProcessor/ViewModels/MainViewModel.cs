@@ -29,6 +29,7 @@ public partial class MainViewModel : BaseViewModel
     protected readonly IAutoTaggerService _wDAutoTagger;
     protected readonly IAutoTaggerService _wDv3AutoTagger;
     protected readonly IAutoTaggerService _wDv3LargeAutoTagger;
+    protected readonly IAutoTaggerService _vitLargeAutoTagger;
     protected readonly IAutoTaggerService _joyTagAutoTagger;
     protected readonly IAutoTaggerService _e621AutoTagger;
     protected readonly ITagProcessorService _tagProcessor;
@@ -105,6 +106,7 @@ public partial class MainViewModel : BaseViewModel
     /// <param name="wDautoTagger">The WD 1.4 auto-tagging service.</param>
     /// <param name="wDv3autoTagger">The WD 3 auto-tagging service.</param>
     /// <param name="wDv3largeAutoTagger">The WD 3 Large auto-tagging service.</param>
+    /// <param name="vitLargeautoTagger">The ViT Large auto-tagging service.</param>
     /// <param name="joyTagautoTagger">The JoyTag auto-tagging service.</param>
     /// <param name="e621autoTagger">The E621 auto-tagging service.</param>
     /// <param name="tagProcessor">The tag processing service.</param>
@@ -121,6 +123,7 @@ public partial class MainViewModel : BaseViewModel
                          WDAutoTaggerService wDAutoTagger,
                          WDV3AutoTaggerService wDv3AutoTagger,
                          WDV3LargeAutoTaggerService wDv3LargeAutoTagger,
+                         ViTLargeAutoTaggerService vitLargeAutoTagger,
                          JoyTagAutoTaggerService joyTagAutoTagger,
                          E621AutoTaggerService e621AutoTagger,
                          ITagProcessorService tagProcessor,
@@ -139,6 +142,7 @@ public partial class MainViewModel : BaseViewModel
         _wDAutoTagger = wDAutoTagger;
         _wDv3AutoTagger = wDv3AutoTagger;
         _wDv3LargeAutoTagger = wDv3LargeAutoTagger;
+        _vitLargeAutoTagger = vitLargeAutoTagger;
         _joyTagAutoTagger = joyTagAutoTagger;
         _e621AutoTagger = e621AutoTagger;
         _tagProcessor = tagProcessor;
@@ -187,7 +191,7 @@ public partial class MainViewModel : BaseViewModel
         _views.Add(AppPages.Tag_Generation, new GenerateTagsView()
         {
             DataContext = new GenerateTagsViewModel(fileManipulator, wDAutoTagger, wDv3AutoTagger, joyTagAutoTagger,
-                wDv3LargeAutoTagger, e621AutoTagger, logger, configs)
+                wDv3LargeAutoTagger, vitLargeAutoTagger, e621AutoTagger, logger, configs)
         });
         _views.Add(AppPages.Process_Captions, new ProcessCaptionsView()
         {

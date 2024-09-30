@@ -7,6 +7,7 @@
         WD14v2,
         WDv3,
         WDv3Large,
+        WDViTLarge,
         Z3DE621,
         #endregion
         #region Yolo models

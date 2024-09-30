@@ -12,6 +12,8 @@ namespace SmartData.Lib.Services.MachineLearning
     /// </summary>
     public class WDAutoTaggerService : BaseAutoTaggerService<WDInputData, WDOutputData>, INotifyProgress
     {
+        protected readonly string _inputName;
+        
         /// <summary>
         /// Initializes a new instance of the WDAutoTaggerService class.
         /// </summary>
@@ -20,9 +22,15 @@ namespace SmartData.Lib.Services.MachineLearning
         /// <param name="modelPath">The path to the machine learning model.</param>
         /// <param name="tagsPath">The path to the directory where tag files are stored.</param>
         public WDAutoTaggerService(IImageProcessorService imageProcessorService, ITagProcessorService tagProcessorService,
-            string modelPath, string tagsPath) :
+            string modelPath, string tagsPath, string inputName = "input_1:0") :
             base(imageProcessorService, tagProcessorService, modelPath, tagsPath)
         {
+            _inputName = inputName;
+        }
+
+        protected override string[] GetInputColumns()
+        {
+            return new string[] { _inputName };
         }
 
         public override async Task<WDOutputData> GetPredictionAsync(string inputImagePath)
@@ -31,18 +39,17 @@ namespace SmartData.Lib.Services.MachineLearning
 
             List<NamedOnnxValue> inputValues = new List<NamedOnnxValue>
             {
-                NamedOnnxValue.CreateFromTensor<float>(GetInputColumns().FirstOrDefault(), inputData.Input)
+                NamedOnnxValue.CreateFromTensor<float>(_inputName, inputData.Input)
             };
 
             using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> prediction = await Task.Run(() => _session.Run(inputValues)))
             {
                 Tensor<float> tensorPrediction = prediction[0].AsTensor<float>();
 
-                WDOutputData outputData = new WDOutputData()
+                return new WDOutputData()
                 {
                     PredictionsSigmoid = tensorPrediction.ToArray()
                 };
-                return outputData;
             }
         }
 
@@ -86,18 +93,17 @@ namespace SmartData.Lib.Services.MachineLearning
             WDInputData inputData = await _imageProcessor.ProcessImageForTagPredictionAsync(imageStream);
             List<NamedOnnxValue> inputValues = new List<NamedOnnxValue>
             {
-                NamedOnnxValue.CreateFromTensor<float>(GetInputColumns().FirstOrDefault(), inputData.Input)
+                NamedOnnxValue.CreateFromTensor<float>(_inputName, inputData.Input)
             };
 
             using (IDisposableReadOnlyCollection<DisposableNamedOnnxValue> prediction = await Task.Run(() => _session.Run(inputValues)))
             {
                 Tensor<float> tensorPrediction = prediction[0].AsTensor<float>();
 
-                WDOutputData outputData = new WDOutputData()
+                return new WDOutputData()
                 {
                     PredictionsSigmoid = tensorPrediction.ToArray()
                 };
-                return outputData;
             }
         }
 
