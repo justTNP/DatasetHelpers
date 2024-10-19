@@ -32,6 +32,9 @@ namespace Models.Configurations
         [JsonPropertyName("applyRedudancyRemoval")]
         public bool ApplyRedudancyRemoval { get; set; } = true;
 
+        [JsonPropertyName("recursiveFolders")]
+        public bool RecursiveFolders { get; set; } = false;
+
         [JsonPropertyName("appendToExistingFile")]
         public bool AppendToExistingFile { get; set; } = false;
 

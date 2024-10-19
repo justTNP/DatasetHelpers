@@ -7,9 +7,9 @@
         public string TagsPath { get; set; }
         public float Threshold { get; set; }
 
-        public Task GenerateTags(string inputPath, string outputPath, bool weightedCaptions = false);
-        public Task GenerateTagsAndAppendToFile(string inputPath, string outputPath, bool weightedCaptions = false);
-        public Task GenerateTagsAndKeepRedundant(string inputPath, string outputPath, bool appendToFile, bool weightedCaptions = false);
+        public Task GenerateTags(string inputPath, string outputPath, bool weightedCaptions = false, bool recursive = false);
+        public Task GenerateTagsAndAppendToFile(string inputPath, string outputPath, bool weightedCaptions = false, bool recursive = false);
+        public Task GenerateTagsAndKeepRedundant(string inputPath, string outputPath, bool appendToFile, bool weightedCaptions = false, bool recursive = false);
         public Task<string> InterrogateImageFromStream(Stream imageStream);
     }
 }

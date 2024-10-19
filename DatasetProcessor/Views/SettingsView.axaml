@@ -821,6 +821,17 @@
 							   HorizontalAlignment="Left"
 							   Content="Generate weighted tags?"/>
 					</Grid>
+					<Grid Grid.Row="14"
+						  Grid.Column="0"
+						  Grid.ColumnSpan="3" ColumnDefinitions="auto, *">
+						<CheckBox Grid.Column="0"
+								  HorizontalAlignment="Left"
+								  Margin="10, 0, 0, 0"
+								  IsChecked="{Binding GenerateTagsRecursiveFolders}"/>
+						<Label Grid.Column="1"
+							   HorizontalAlignment="Left"
+							   Content="Generate in all sub-directories?"/>
+					</Grid>					
 				</Grid>
 			</Border>
 		</Grid>
