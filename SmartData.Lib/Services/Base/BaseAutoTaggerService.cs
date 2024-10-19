@@ -305,7 +305,7 @@ namespace SmartData.Lib.Services.Base
             }
             else
             {
-                await PostProcessTags(outputPath, weightedCaptions, file);
+                await PostProcessTags(outputPath, weightedCaptions, file, recursive);
             }
         }
 
