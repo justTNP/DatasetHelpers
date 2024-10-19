@@ -110,7 +110,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await PostProcessTags(outputPath, weightedCaptions, file, recursive);
+                await PostProcessTags(outputPath, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -140,7 +140,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await PostProcessTagsAndAppendToFile(outputPath, weightedCaptions, file, recursive);
+                await PostProcessTagsAndAppendToFile(outputPath, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -171,7 +171,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await GenerateTagsWithRedundant(outputPath, appendToFile, weightedCaptions, file, recursive);
+                await GenerateTagsWithRedundant(outputPath, appendToFile, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -184,7 +184,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">Flag indicating whether to use weighted captions for tag generation.</param>
         /// <param name="file">The path to the image file to process.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task GenerateTagsWithRedundant(string outputPath, bool appendToFile, bool weightedCaptions, string file, bool recursive)
+        protected async Task GenerateTagsWithRedundant(string outputPath, bool appendToFile, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             List<string> orderedPredictions = await GetOrderedByScoreListOfTagsAsync(file, weightedCaptions);
             string commaSeparated = _tagProcessor.GetCommaSeparatedString(orderedPredictions);
@@ -200,10 +200,10 @@ namespace SmartData.Lib.Services.Base
             string resultPath = String.Empty;
             string tempFile = String.Empty;
 
-            if (recursive && file.StartsWith(outputPath, StringComparison.OrdinalIgnoreCase))
+            if (recursive)
             {
                 string fullDirPath = Path.GetDirectoryName(file);
-                string relativePath = fullDirPath.Substring(outputPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
                 resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
                 tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
             }
@@ -228,7 +228,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">A boolean value indicating whether weighted captions are used.</param>
         /// <param name="file">The input file containing the tags to be processed.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task PostProcessTags(string outputPath, bool weightedCaptions, string file, bool recursive)
+        protected async Task PostProcessTags(string outputPath, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             List<string> orderedPredictions = await GetOrderedByScoreListOfTagsAsync(file, weightedCaptions);
             string commaSeparated = _tagProcessor.GetCommaSeparatedString(orderedPredictions);
@@ -237,10 +237,10 @@ namespace SmartData.Lib.Services.Base
             string resultPath = String.Empty;
             string tempFile = String.Empty;
 
-            if (recursive && file.StartsWith(outputPath, StringComparison.OrdinalIgnoreCase))
+            if (recursive)
             {
                 string fullDirPath = Path.GetDirectoryName(file);
-                string relativePath = fullDirPath.Substring(outputPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
                 resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
                 tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
             }
@@ -265,7 +265,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">A boolean value indicating whether weighted captions are used.</param>
         /// <param name="file">The input file containing the existing caption and tags to be processed.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task PostProcessTagsAndAppendToFile(string outputPath, bool weightedCaptions, string file, bool recursive)
+        protected async Task PostProcessTagsAndAppendToFile(string outputPath, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             string txtFile = Path.ChangeExtension(file, ".txt");
 
@@ -283,10 +283,10 @@ namespace SmartData.Lib.Services.Base
                 string resultPath = String.Empty;
                 string tempFile = String.Empty;
 
-                if (recursive && file.StartsWith(outputPath, StringComparison.OrdinalIgnoreCase))
+                if (recursive)
                 {
                     string fullDirPath = Path.GetDirectoryName(file);
-                    string relativePath = fullDirPath.Substring(outputPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                    string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
                     resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
                     tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
                 }
@@ -305,7 +305,7 @@ namespace SmartData.Lib.Services.Base
             }
             else
             {
-                await PostProcessTags(outputPath, weightedCaptions, file, recursive);
+                await PostProcessTags(outputPath, weightedCaptions, file, recursive, rootPath);
             }
         }
 
