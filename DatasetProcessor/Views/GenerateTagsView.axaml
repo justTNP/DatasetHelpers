@@ -1,17 +1,16 @@
-<UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+<UserControl xmlns="https://github.com/avaloniaui"             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 			 xmlns:vm="clr-namespace:DatasetProcessor.ViewModels"
 			 xmlns:local="clr-namespace:SmartData.Lib.Helpers;assembly=SmartData.Lib"
-             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="768"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="960"
              x:Class="DatasetProcessor.Views.GenerateTagsView"
 			 x:DataType="vm:GenerateTagsViewModel"
 			 Background="{DynamicResource SecondarySurfaceDark}">
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml"/>
 	</Design.DesignStyle>
-	<Grid RowDefinitions="auto, 10, auto, auto, 10, auto, 10, auto, auto, auto, 10, auto, 10, auto, 10, auto, 30, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto"
+	<Grid RowDefinitions="auto, 10, auto, auto, auto, 10, auto, 10, auto, auto, auto, 10, auto, 10, auto, 10, auto, 30, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto, 10, auto"
 		  Background="Transparent">
 		<!-- INPUT FOLDER -->
 		<Grid Classes="gridSecondary" Grid.Row="0" ColumnDefinitions="auto, 10, *, 10, auto">
@@ -38,8 +37,17 @@
 				</Panel>
 			</Button>
 		</Grid>
-		<!-- DIFFERENT OUTPUT FOLDER CHECKBOX -->
+		<!-- RECURSIVE FOLDERS CHECKBOX -->
 		<Panel Grid.Row="2"
+			   Background="{DynamicResource SurfaceLighterDark}">
+			<CheckBox HorizontalAlignment="Left"
+					  Margin="10"
+					  IsChecked="{Binding RecursiveFolders}"
+					  Content="Run through all sub-directories?">
+			</CheckBox>
+		</Panel>		
+		<!-- DIFFERENT OUTPUT FOLDER CHECKBOX -->
+		<Panel Grid.Row="3"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  x:Name="OutputFolderPathVisibility"
@@ -51,7 +59,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- OUTPUT FOLDER -->
-		<Grid Classes="gridSecondary" Grid.Row="3" ColumnDefinitions="auto, 10, *, 10, auto" IsVisible="{Binding ElementName=OutputFolderPathVisibility, Path=IsChecked}">
+		<Grid Classes="gridSecondary" Grid.Row="4" ColumnDefinitions="auto, 10, *, 10, auto" IsVisible="{Binding ElementName=OutputFolderPathVisibility, Path=IsChecked}">
 			<Button Grid.Column="0"
 					Content="Select output folder"
 					Width="180"
@@ -77,7 +85,7 @@
 		</Grid>
 		<!-- MODEL DROPBOX -->
 		<Grid Classes="gridSecondary"
-			  Grid.Row="5"
+			  Grid.Row="6"
 			  MinHeight="36"
 			  Margin="0,0,0,-1"
 			  ColumnDefinitions="auto, 10, *, 10, auto">
@@ -94,7 +102,7 @@
 		</Grid>
 		<!-- THRESHOLD SLIDER -->
 		<Grid Classes="gridSecondary"
-				  Grid.Row="7"
+				  Grid.Row="8"
 				  ColumnDefinitions="auto, 10, *, 10, auto">
 			<Label Grid.Column="0"
 				   Content="Threshold for predictions:"/>
@@ -108,7 +116,7 @@
 				   Content="{Binding Threshold}"/>
 		</Grid>
 		<!-- REDUNDANCY REMOVAL CHECKBOX -->
-		<Panel Grid.Row="9"
+		<Panel Grid.Row="10"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -117,7 +125,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- APPEND GENERATED CAPTIONS CHECKBOX -->
-		<Panel Grid.Row="11"
+		<Panel Grid.Row="12"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -126,7 +134,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- WEIGHTED CAPTIONS CHECKBOX -->
-		<Panel Grid.Row="13"
+		<Panel Grid.Row="14"
 			   Background="{DynamicResource SurfaceLighterDark}">
 			<CheckBox HorizontalAlignment="Left"
 					  Margin="10"
@@ -135,7 +143,7 @@
 			</CheckBox>
 		</Panel>
 		<!-- NOTE TEXT BOX -->
-		<Panel Grid.Row="15"
+		<Panel Grid.Row="16"
 			   Background="{DynamicResource SurfaceDark}">
 			<TextBlock HorizontalAlignment="Center"
 					   Margin="10"
@@ -144,15 +152,15 @@
 					   Foreground="{DynamicResource Secondary}"
 					   Text="Note: Low Threshold values can capture false positives and make it harder for your model to learn.&#xa;If your dataset is big, like 300+ images, consider using a higher threshold value like 0.5-0.6 to avoid too many false positives.&#xa;You can also use 2 or more models to generate tags at a higher threshold value, like 0.6+, and append the generated tags to the .txt files.&#xa;&#xa;&#xa;AVAILABLE MODELS ARE:&#xa;WD 1.4 v2: Great for anime and general style of artwork. Suggested Threshold is 0.40-0.50.&#xa;WD v3: A model in the WD family with 2k more total tags over WD 1.4 v2. Suggested Threshold is 0.40-0.50.&#xa;WD v3 Large: Latest WD model with more training images and newer tags. Suggested Threshold is 0.25-0.50.&#xa;WD ViT Large: An alternative to WD v3 Large. Suggested Threshold is 0.25-0.50.&#xa;JoyTag: Great for anime and general type of artwork and can also work quite well with photos. Suggested Threshold: 0.35-0.4.&#xa;Z3D E621: Good for artwork themed around furries. I haven't tested this model extensively yet, but a value of 0.4-0.5 is probably a safe bet." />
 		</Panel>
-		<Separator Grid.Row="17"/>
+		<Separator Grid.Row="18"/>
 		<!-- CURRENTLY PROCESSING -->
-		<Label Grid.Row="19"
+		<Label Grid.Row="20"
 			   Content="{Binding PredictionProgress.TotalFiles, StringFormat='Found {0} images.'}"/>
 		<!-- ELAPSED TIME -->
-		<Label Grid.Row="21"
+		<Label Grid.Row="22"
 			   Content="{Binding ElapsedTime, StringFormat='Generation elapsed time: {0:hh\\:mm\\:ss\\.fff}'}"/>
 		<!-- GENERATE BUTTON -->
-		<Grid Grid.Row="23"
+		<Grid Grid.Row="24"
 			  ColumnDefinitions="auto, 10, auto"
 			  HorizontalAlignment="Center">
 			<Button Width="200"
@@ -166,10 +174,10 @@
 					Command="{Binding CancelTaskCommand}"/>
 		</Grid>		
 		<!-- PROGRESS BAR -->
-		<ProgressBar Grid.Row="25"
+		<ProgressBar Grid.Row="26"
 					 Value="{Binding PredictionProgress.PercentComplete}"/>
 		<!-- TASK STATUS -->
-		<Label Grid.Row="28" 
+		<Label Grid.Row="29" 
 			   FontSize="22"
 			   Foreground="{DynamicResource Secondary}"
 			   Content="{Binding TaskStatusString}"/>

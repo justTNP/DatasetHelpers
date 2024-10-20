@@ -55,6 +55,8 @@ namespace DatasetProcessor.ViewModels
         private bool _isUiEnabled;
         [ObservableProperty]
         private bool _isCancelEnabled;
+        [ObservableProperty]
+        private bool _recursiveFolders;
 
         [ObservableProperty]
         private string _inputFolderPathLabel = string.Empty;
@@ -127,6 +129,7 @@ namespace DatasetProcessor.ViewModels
             WeightedCaptions = _configs.Configurations.GenerateTagsConfigs.WeightedCaptions;
             AppendCaptionsToFile = _configs.Configurations.GenerateTagsConfigs.AppendToExistingFile;
             ApplyRedundancyRemoval = _configs.Configurations.GenerateTagsConfigs.ApplyRedudancyRemoval;
+            RecursiveFolders = _configs.Configurations.GenerateTagsConfigs.RecursiveFolders;
 
             _timer = new Stopwatch();
             TaskStatus = ProcessingStatus.Idle;
@@ -265,16 +268,16 @@ namespace DatasetProcessor.ViewModels
             {
                 if (AppendCaptionsToFile)
                 {
-                    await autoTagger.GenerateTagsAndAppendToFile(InputFolderPath, OutputFolderPath, WeightedCaptions);
+                    await autoTagger.GenerateTagsAndAppendToFile(InputFolderPath, OutputFolderPath, WeightedCaptions, RecursiveFolders);
                 }
                 else
                 {
-                    await autoTagger.GenerateTags(InputFolderPath, OutputFolderPath, WeightedCaptions);
+                    await autoTagger.GenerateTags(InputFolderPath, OutputFolderPath, WeightedCaptions, RecursiveFolders);
                 }
             }
             else
             {
-                await autoTagger.GenerateTagsAndKeepRedundant(InputFolderPath, OutputFolderPath, AppendCaptionsToFile);
+                await autoTagger.GenerateTagsAndKeepRedundant(InputFolderPath, OutputFolderPath, AppendCaptionsToFile, RecursiveFolders);
             }
         }
 

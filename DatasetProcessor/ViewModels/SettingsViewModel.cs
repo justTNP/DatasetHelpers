@@ -201,6 +201,8 @@ namespace DatasetProcessor.ViewModels
         private bool _generateTagsAppendGeneratedTags;
         [ObservableProperty]
         private bool _generateTagsWeighted;
+        [ObservableProperty]
+        private bool _generateTagsRecursiveFolders;
 
         [ObservableProperty]
         private bool _showProcessCaptionsSettings;
@@ -381,6 +383,7 @@ namespace DatasetProcessor.ViewModels
             GenerateTagsApplyRedudancyRemoval = Configs.Configurations.GenerateTagsConfigs.ApplyRedudancyRemoval;
             GenerateTagsAppendGeneratedTags = Configs.Configurations.GenerateTagsConfigs.AppendToExistingFile;
             GenerateTagsWeighted = Configs.Configurations.GenerateTagsConfigs.WeightedCaptions;
+            GenerateTagsRecursiveFolders = Configs.Configurations.GenerateTagsConfigs.RecursiveFolders;
 
             ProcessCaptionsInputFolder = Configs.Configurations.ProcessCaptionsConfigs.InputFolder;
 
@@ -743,6 +746,7 @@ namespace DatasetProcessor.ViewModels
             Configs.Configurations.GenerateTagsConfigs.AutoTaggerModel = TagGeneratorModel;
             Configs.Configurations.GenerateTagsConfigs.PredictionsThreshold = (float)GenerateTagsThreshold;
             Configs.Configurations.GenerateTagsConfigs.ApplyRedudancyRemoval = GenerateTagsApplyRedudancyRemoval;
+            Configs.Configurations.GenerateTagsConfigs.RecursiveFolders = GenerateTagsRecursiveFolders;
             Configs.Configurations.GenerateTagsConfigs.AppendToExistingFile = GenerateTagsAppendGeneratedTags;
             Configs.Configurations.GenerateTagsConfigs.WeightedCaptions = GenerateTagsWeighted;
 

@@ -93,7 +93,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="outputPath">The path to the output folder where the text files will be written.</param>
         /// <param name="weightedCaptions">Flag indicating whether to use weighted captions for tag generation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task GenerateTags(string inputPath, string outputPath, bool weightedCaptions = false)
+        public async Task GenerateTags(string inputPath, string outputPath, bool weightedCaptions = false, bool recursive = false)
         {
             if (!_isModelLoaded)
             {
@@ -101,7 +101,7 @@ namespace SmartData.Lib.Services.Base
                 _isModelLoaded = true;
             }
 
-            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern);
+            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern, recursive);
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             TotalFilesChanged?.Invoke(this, files.Length);
@@ -110,7 +110,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await PostProcessTags(outputPath, weightedCaptions, file);
+                await PostProcessTags(outputPath, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -123,7 +123,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="outputPath">The path to the output folder where the text files will be written.</param>
         /// <param name="weightedCaptions">Flag indicating whether to use weighted captions for tag generation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task GenerateTagsAndAppendToFile(string inputPath, string outputPath, bool weightedCaptions = false)
+        public async Task GenerateTagsAndAppendToFile(string inputPath, string outputPath, bool weightedCaptions = false, bool recursive = false)
         {
             if (!_isModelLoaded)
             {
@@ -131,7 +131,7 @@ namespace SmartData.Lib.Services.Base
                 _isModelLoaded = true;
             }
 
-            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern);
+            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern, recursive);
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             TotalFilesChanged?.Invoke(this, files.Length);
@@ -140,7 +140,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await PostProcessTagsAndAppendToFile(outputPath, weightedCaptions, file);
+                await PostProcessTagsAndAppendToFile(outputPath, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -154,7 +154,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="appendToFile">Flag indicating whether to append tags to existing tag files (if available).</param>
         /// <param name="weightedCaptions">Flag indicating whether to use weighted captions for tag generation.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public async Task GenerateTagsAndKeepRedundant(string inputPath, string outputPath, bool appendToFile, bool weightedCaptions = false)
+        public async Task GenerateTagsAndKeepRedundant(string inputPath, string outputPath, bool appendToFile, bool weightedCaptions = false, bool recursive = false)
         {
             if (!_isModelLoaded)
             {
@@ -162,7 +162,7 @@ namespace SmartData.Lib.Services.Base
                 _isModelLoaded = true;
             }
 
-            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern);
+            string[] files = Utilities.GetFilesByMultipleExtensions(inputPath, _imageSearchPattern, recursive);
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
 
             TotalFilesChanged?.Invoke(this, files.Length);
@@ -171,7 +171,7 @@ namespace SmartData.Lib.Services.Base
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                await GenerateTagsWithRedundant(outputPath, appendToFile, weightedCaptions, file);
+                await GenerateTagsWithRedundant(outputPath, appendToFile, weightedCaptions, file, recursive, inputPath);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -184,7 +184,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">Flag indicating whether to use weighted captions for tag generation.</param>
         /// <param name="file">The path to the image file to process.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task GenerateTagsWithRedundant(string outputPath, bool appendToFile, bool weightedCaptions, string file)
+        protected async Task GenerateTagsWithRedundant(string outputPath, bool appendToFile, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             List<string> orderedPredictions = await GetOrderedByScoreListOfTagsAsync(file, weightedCaptions);
             string commaSeparated = _tagProcessor.GetCommaSeparatedString(orderedPredictions);
@@ -197,9 +197,22 @@ namespace SmartData.Lib.Services.Base
                 commaSeparated = $"{existingCaption.Replace("_", " ")}, {commaSeparated}";
             }
 
-            string resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+            string resultPath = String.Empty;
+            string tempFile = String.Empty;
 
-            string tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
+            if (recursive)
+            {
+                string fullDirPath = Path.GetDirectoryName(file);
+                string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
+            }
+            else
+            {
+                resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
+            }
+
             File.Move(file, tempFile);
 
             string finalFile = tempFile.Replace("temp_", "");
@@ -215,16 +228,28 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">A boolean value indicating whether weighted captions are used.</param>
         /// <param name="file">The input file containing the tags to be processed.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task PostProcessTags(string outputPath, bool weightedCaptions, string file)
+        protected async Task PostProcessTags(string outputPath, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             List<string> orderedPredictions = await GetOrderedByScoreListOfTagsAsync(file, weightedCaptions);
             string commaSeparated = _tagProcessor.GetCommaSeparatedString(orderedPredictions);
 
             string redundantRemoved = _tagProcessor.ApplyRedundancyRemoval(commaSeparated);
+            string resultPath = String.Empty;
+            string tempFile = String.Empty;
 
-            string resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+            if (recursive)
+            {
+                string fullDirPath = Path.GetDirectoryName(file);
+                string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
+            }
+            else
+            {
+                resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
+            }
 
-            string tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
             File.Move(file, tempFile);
 
             string finalFile = tempFile.Replace("temp_", "");
@@ -240,7 +265,7 @@ namespace SmartData.Lib.Services.Base
         /// <param name="weightedCaptions">A boolean value indicating whether weighted captions are used.</param>
         /// <param name="file">The input file containing the existing caption and tags to be processed.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        protected async Task PostProcessTagsAndAppendToFile(string outputPath, bool weightedCaptions, string file)
+        protected async Task PostProcessTagsAndAppendToFile(string outputPath, bool weightedCaptions, string file, bool recursive, string rootPath)
         {
             string txtFile = Path.ChangeExtension(file, ".txt");
 
@@ -255,9 +280,22 @@ namespace SmartData.Lib.Services.Base
 
                 string redundantRemoved = _tagProcessor.ApplyRedundancyRemoval(existingPlusGenerated);
 
-                string resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                string resultPath = String.Empty;
+                string tempFile = String.Empty;
 
-                string tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
+                if (recursive)
+                {
+                    string fullDirPath = Path.GetDirectoryName(file);
+                    string relativePath = fullDirPath.Substring(rootPath.Length).TrimStart(Path.DirectorySeparatorChar);
+                    resultPath = Path.Combine(outputPath, relativePath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                    tempFile = Path.Combine(outputPath, relativePath, $"temp_{Path.GetFileName(file)}");
+                }
+                else
+                {
+                    resultPath = Path.Combine(outputPath, $"{Path.GetFileNameWithoutExtension(file)}.txt");
+                    tempFile = Path.Combine(outputPath, $"temp_{Path.GetFileName(file)}");
+                }
+
                 File.Move(file, tempFile);
 
                 string finalFile = tempFile.Replace("temp_", "");
@@ -267,7 +305,7 @@ namespace SmartData.Lib.Services.Base
             }
             else
             {
-                await PostProcessTags(outputPath, weightedCaptions, file);
+                await PostProcessTags(outputPath, weightedCaptions, file, recursive, rootPath);
             }
         }
 

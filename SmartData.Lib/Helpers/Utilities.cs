@@ -85,9 +85,11 @@ namespace SmartData.Lib.Helpers
         /// <param name="folderPath">The path of the directory to search.</param>
         /// <param name="searchPattern">A comma-separated list of file extensions to match, e.g., ".txt,.docx,.png".</param>
         /// <returns>An array of strings representing the file paths that match the provided extensions.</returns>
-        public static string[] GetFilesByMultipleExtensions(string folderPath, string searchPattern)
+        public static string[] GetFilesByMultipleExtensions(string folderPath, string searchPattern, bool recursive = false)
         {
-            IEnumerable<string> result = Directory.GetFiles(folderPath, "*.*", SearchOption.TopDirectoryOnly)
+            SearchOption searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
+
+            IEnumerable<string> result = Directory.GetFiles(folderPath, "*.*", searchOption)
                 .Where(extension => searchPattern.Contains(Path.GetExtension(extension).ToLower()));
 
             return result.Where(x => !x.Contains("sample_prompt_custom.txt")).ToArray();
