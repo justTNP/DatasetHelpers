@@ -2,7 +2,7 @@
 {
     public interface ITagProcessorService
     {
-        public Task ProcessAllTagFiles(string inputFolderPath, string tagsToAdd, string tagsToEmphasize, string tagsToRemove);
+        public Task ProcessAllTagFiles(string inputFolderPath, string tagsToAdd, string tagsToEmphasize, string tagsToRemove, string tagsToAppend);
         public Task ConsolidateTags(string inputFolderPath);
         public Task ConsolidateTagsAndLogEdgeCases(string inputFolderPath, ILoggerService loggerService);
         public Task FindAndReplace(string inputFolderPath, string wordsToBeReplaced, string wordsToReplace);

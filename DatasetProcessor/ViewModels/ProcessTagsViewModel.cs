@@ -47,6 +47,10 @@ namespace DatasetProcessor.ViewModels
         private bool _applyConsolidateTags;
         [ObservableProperty]
         private string _sortedByFrequency;
+        [ObservableProperty]
+        private string _existingTagToFind;
+        [ObservableProperty]
+        private string _tagsToAppend;
 
         private int? _startingNumberForFileNames;
         public string StartingNumberForFileNames
@@ -107,6 +111,10 @@ namespace DatasetProcessor.ViewModels
             ApplyRedundancyRemoval = _configs.Configurations.ProcessTagsConfigs.ApplyRedudancyRemoval;
             ApplyConsolidateTags = _configs.Configurations.ProcessTagsConfigs.ConsolidateTags;
 
+            // Initialize new properties
+            ExistingTagToFind = string.Empty;
+            TagsToAppend = string.Empty;
+            
             SortedByFrequency = string.Empty;
             _timer = new Stopwatch();
 
@@ -141,7 +149,10 @@ namespace DatasetProcessor.ViewModels
 
             try
             {
-                await _tagProcessor.ProcessAllTagFiles(InputFolderPath, TagsToAdd, TagsToEmphasize, TagsToRemove);
+                // When append tags are provided, use ExistingTagToFind as the target left input.
+                // Otherwise, fall back to the original TagsToAdd.
+                string targetTag = string.IsNullOrWhiteSpace(TagsToAppend) ? TagsToAdd : ExistingTagToFind;
+                await _tagProcessor.ProcessAllTagFiles(InputFolderPath, targetTag, TagsToEmphasize, TagsToRemove, TagsToAppend);
                 if (RandomizeTags)
                 {
                     TagProcessingProgress.Reset();
@@ -169,6 +180,10 @@ namespace DatasetProcessor.ViewModels
                     TagProcessingProgress.Reset();
                     await _tagProcessor.ApplyRedundancyRemovalToFiles(InputFolderPath);
                 }
+            }
+            catch (ArgumentException ex)
+            {
+                Logger.SetLatestLogMessage($"Invalid input: {ex.Message}", LogMessageColor.Error);
             }
             catch (OperationCanceledException)
             {

@@ -143,8 +143,9 @@ namespace SmartData.Lib.Services
         /// <param name="tagsToAdd">The tags to add to the tag files.</param>
         /// <param name="tagsToEmphasize">The tags to emphasize in the tag files.</param>
         /// <param name="tagsToRemove">The tags to remove from the tag files.</param>
+        /// <param name="tagsToAppend">The tags to append from existing tags.</param>
         /// <returns>A task that represents the asynchronous processing of all tag files in the folder.</returns>
-        public async Task ProcessAllTagFiles(string inputFolderPath, string tagsToAdd, string tagsToEmphasize, string tagsToRemove)
+        public async Task ProcessAllTagFiles(string inputFolderPath, string tagsToAdd, string tagsToEmphasize, string tagsToRemove, string tagsToAppend)
         {
             string[] files = Utilities.GetFilesByMultipleExtensions(inputFolderPath, _txtSearchPattern);
             CancellationToken cancellationToken = _cancellationTokenSource.Token;
@@ -156,7 +157,7 @@ namespace SmartData.Lib.Services
                 cancellationToken.ThrowIfCancellationRequested();
 
                 string readTags = await File.ReadAllTextAsync(file);
-                string processedTags = ProcessListOfTags(readTags, tagsToAdd, tagsToEmphasize, tagsToRemove);
+                string processedTags = ProcessListOfTags(readTags, tagsToAdd, tagsToEmphasize, tagsToRemove, tagsToAppend);
                 await File.WriteAllTextAsync(file, processedTags);
                 ProgressUpdated?.Invoke(this, EventArgs.Empty);
             }
@@ -781,18 +782,20 @@ namespace SmartData.Lib.Services
         /// <param name="tagsToEmphasize">A string of tags to bring to the front of the result list. Multiple tags should be separated by commas.</param>
         /// <param name="tagsToRemove">A string of tags to remove from the result list. Multiple tags should be separated by commas.</param>
         /// <returns>A comma-separated string of processed tags.</returns>
-        private static string ProcessListOfTags(string predictedTags, string tagsToAdd, string tagsToEmphasize, string tagsToRemove)
+        private static string ProcessListOfTags(string predictedTags, string tagsToAdd, string tagsToEmphasize, string tagsToRemove, string tagsToAppend)
         {
             List<string> tagsResult = new List<string>();
 
-            // Add user input tags.
-            if (!string.IsNullOrEmpty(tagsToAdd))
+            // If no append tags are provided, add user input tags normally.
+            if (string.IsNullOrWhiteSpace(tagsToAppend))
             {
-                string[] tagsToAddSplit = Utilities.ParseAndCleanTags(tagsToAdd);
-
-                foreach (string tag in tagsToAddSplit)
+                if (!string.IsNullOrEmpty(tagsToAdd))
                 {
-                    tagsResult.Add(tag);
+                    string[] tagsToAddSplit = Utilities.ParseAndCleanTags(tagsToAdd);
+                    foreach (string tag in tagsToAddSplit)
+                    {
+                        tagsResult.Add(tag);
+                    }
                 }
             }
 
@@ -810,6 +813,33 @@ namespace SmartData.Lib.Services
                     {
                         tagsResult.Add(tag);
                     }
+                }
+            }
+
+            // Process appending tags if specified.
+            if (!string.IsNullOrWhiteSpace(tagsToAppend))
+            {
+                if (string.IsNullOrWhiteSpace(tagsToAdd))
+                {
+                    throw new ArgumentException("Target tag cannot be empty when append tags are provided.");
+                }
+                string[] leftTags = Utilities.ParseAndCleanTags(tagsToAdd);
+                if (leftTags.Length != 1)
+                {
+                    throw new ArgumentException("Target tag must contain exactly one tag.");
+                }
+                string leftTag = leftTags[0];
+                string[] rightTags = Utilities.ParseAndCleanTags(tagsToAppend);
+                if (rightTags.Any(t => t.Equals(leftTag, StringComparison.OrdinalIgnoreCase)))
+                {
+                    throw new ArgumentException("Duplicate tag found: the target tag appears in the append tags.");
+                }
+
+                // Update the predicted tags by appending the new tags only if the file already contains the target.
+                string processedTags = ProcessTagsAppend(predictedTags, tagsToAdd, tagsToAppend);
+                if (processedTags != predictedTags)
+                {
+                    predictedTagsSplit = Utilities.ParseAndCleanTags(processedTags);
                 }
             }
 
@@ -873,6 +903,69 @@ namespace SmartData.Lib.Services
             }
 
             return string.Join(", ", tagsResult.Distinct());
+        }
+
+        /// <summary>
+        /// Finds an existing tag and appends however many tags after it.
+        /// </summary>
+        /// <param name="existingTags">The original string containing the tags.</param>
+        /// <param name="targetTag">A singular tag to be searched.</param>
+        /// <param name="tagsToAppend">The comma-separated list of new tags.</param>
+        /// <returns>The modified string with the tags replaced.</returns>
+        /// <exception cref="ArgumentException">Thrown when validation fails for the input tags.</exception>
+        private static string ProcessTagsAppend(string existingTags, string targetTag, string tagsToAppend)
+        {
+            // Validate inputs
+            if (string.IsNullOrWhiteSpace(targetTag))
+            {
+                if (!string.IsNullOrWhiteSpace(tagsToAppend))
+                {
+                    throw new ArgumentException("Target tag cannot be empty when append tags are provided!");
+                }
+                return existingTags;
+            }
+
+            // Parse and clean the input tags
+            string[] existingTagsSplit = Utilities.ParseAndCleanTags(existingTags);
+            string cleanedTargetTag = targetTag.Trim();
+            
+            // Check if target tag contains multiple tags (comma-separated)
+            if (cleanedTargetTag.Contains(","))
+            {
+                throw new ArgumentException("Target tag must be a single tag! Multiple tags were provided in the target.");
+            }
+
+            if (string.IsNullOrWhiteSpace(tagsToAppend))
+            {
+                return existingTags;
+            }
+
+            string[] tagsToAppendSplit = Utilities.ParseAndCleanTags(tagsToAppend);
+
+            // Check for duplicate tags between target and append list
+            if (tagsToAppendSplit.Contains(cleanedTargetTag, StringComparer.OrdinalIgnoreCase))
+            {
+                throw new ArgumentException($"Cannot append tags that include the target tag '{cleanedTargetTag}'!");
+            }
+
+            // If the file contains the target tag, append the new tags
+            if (existingTagsSplit.Contains(cleanedTargetTag, StringComparer.OrdinalIgnoreCase))
+            {
+                List<string> resultTags = existingTagsSplit.ToList();
+                
+                // Only add tags that don't already exist in the file
+                foreach (string tagToAppend in tagsToAppendSplit)
+                {
+                    if (!resultTags.Contains(tagToAppend, StringComparer.OrdinalIgnoreCase))
+                    {
+                        resultTags.Add(tagToAppend);
+                    }
+                }
+
+                return string.Join(", ", resultTags);
+            }
+
+            return existingTags;
         }
 
         /// <summary>

@@ -46,7 +46,7 @@
 						<!-- INPUT FIELDS -->
 						<Grid Classes="gridSecondary"
 							Grid.Row="0"
-							RowDefinitions="auto, 10, auto, 10, auto, 10, auto"
+							RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 10, auto"
 							ColumnDefinitions="1*, 10, 2*, 10, 2*">
 							<!-- TAGS TO ADD -->
 							<Label Grid.Row="0"
@@ -91,6 +91,19 @@
 									Grid.Column="4"
 									Watermark="Enter the tags you want to replace with, separated by commas. For example: 'newtag1, newtag2'. Leave blank if not applicable."
 									Text="{Binding TagsToReplace}"/>
+							<!-- TAGS TO APPEND -->
+							<Label Grid.Row="8"
+								Grid.Column="0"
+								Content="Tags to append:"
+								HorizontalAlignment="Left"/>
+							<TextBox Grid.Row="8"
+								Grid.Column="2"
+								Watermark="Enter a single tag to search for. For example: 'tag1'. Multiple tags are not allowed in this field."
+								Text="{Binding ExistingTagToFind}"/>
+							<TextBox Grid.Row="8"
+								Grid.Column="4"
+								Watermark="Enter the tags you want to append after the existing tag, separated by commas. For example: 'tag2, tag3, tag4'."
+								Text="{Binding TagsToAppend}"/>
 						</Grid>
 						<!-- CHECK BOXES -->
 						<Grid Classes="gridSecondary" Grid.Row="4" 
