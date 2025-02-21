@@ -36,7 +36,9 @@ namespace SmartData.Lib.Services
 
         private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public event EventHandler<LogMessageColor>? LatestLogChangedEvent;
 
         /// <summary>
         /// Set the latest Log Message and its color.

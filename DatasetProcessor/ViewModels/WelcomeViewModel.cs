@@ -12,10 +12,10 @@ namespace DatasetProcessor.ViewModels
 {
     public partial class WelcomeViewModel : BaseViewModel
     {
-        private const string _repoWebAddress = $@"https://github.com/Particle1904/DatasetHelpers";
+        private const string _repoWebAddress = $@"https://github.com/justTNP/DatasetHelpers";
         public string RepoWebAddress => _repoWebAddress;
 
-        private const string _releasesWebAddress = $@"https://github.com/Particle1904/DatasetHelpers/releases";
+        private const string _releasesWebAddress = $@"https://github.com/justTNP/DatasetHelpers/releases";
         public string ReleasesWebAddress => _releasesWebAddress;
 
         private const string _wikiWebAddress = $@"https://github.com/Particle1904/DatasetHelpers/wiki";

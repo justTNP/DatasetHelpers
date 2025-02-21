@@ -88,10 +88,6 @@ namespace DatasetProcessor.ViewModels
         {
             return ColorNameToHex.TryGetValue(colorName, out string hexColor) ? hexColor : "#FFB347";
         }
-
-        /// <summary>
-        /// Gets the current type of file being edited, either .txt or .caption.
-        /// </summary>
         
         [RelayCommand]
         public async Task OpenFileAsync()
@@ -131,6 +127,9 @@ namespace DatasetProcessor.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets the current type of file being edited, either .txt or .caption.
+        /// </summary>
         public string CurrentType
         {
             get
