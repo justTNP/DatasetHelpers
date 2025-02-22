@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
+using Avalonia.Input;
 
 using DatasetProcessor.src.Classes;
 using DatasetProcessor.ViewModels;
@@ -140,6 +141,34 @@ namespace DatasetProcessor.Views
             if (e.PropertyName == nameof(_viewModel.CurrentImageTags))
             {
                 EditorTags.Text = _viewModel.CurrentImageTags;
+            }
+        }
+
+        /// <summary>
+        /// Add a tag to the current image via double-clicking.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TagDoubleTapped(object? sender, TappedEventArgs e)
+        {
+            // Ensure the sender is a TextBlock with the proper DataContext.
+            if (sender is TextBlock textBlock && textBlock.DataContext is TagSuggestion suggestion)
+            {
+                // Remove underscores from the tag.
+                string cleanTag = suggestion.Tag.Replace("_", " ");
+
+                // Reference the TextEditor by its name (assumed to be "EditorTags").
+                // Append the tag according to the current content:
+                if (!string.IsNullOrWhiteSpace(EditorTags.Text))
+                {
+                    // If there is existing content, prepend with a comma and space.
+                    EditorTags.Text += ", " + cleanTag;
+                }
+                else
+                {
+                    // If the TextEditor is empty, append the tag followed by a comma and space.
+                    EditorTags.Text = cleanTag + ", ";
+                }
             }
         }
 

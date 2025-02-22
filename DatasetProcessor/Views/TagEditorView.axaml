@@ -229,9 +229,7 @@
 						<!-- Nested grid for Suggestions and Filter box in the right column -->
 						<Grid Grid.Column="1">
 						<Grid.RowDefinitions>
-							<!-- ListBox takes 6 parts -->
-							<RowDefinition Height="5*"/>
-							<!-- Filter TextBox takes 1 part -->
+							<RowDefinition Height="4.5*"/>
 							<RowDefinition Height="*"/>
 						</Grid.RowDefinitions>
 						
@@ -246,7 +244,8 @@
 								ItemsSource="{Binding TagSuggestions}">
 							<ListBox.ItemTemplate>
 								<DataTemplate DataType="local:TagSuggestion">
-									<TextBlock Text="{Binding DisplayText}" Foreground="{Binding ColorBrush}" />
+									<TextBlock Text="{Binding DisplayText}" Foreground="{Binding ColorBrush}" 
+                       				DoubleTapped="TagDoubleTapped"/>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 						</ListBox>
