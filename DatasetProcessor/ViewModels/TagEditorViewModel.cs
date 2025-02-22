@@ -14,9 +14,11 @@ using SmartData.Lib.Interfaces.MachineLearning;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace DatasetProcessor.ViewModels
@@ -68,6 +70,18 @@ namespace DatasetProcessor.ViewModels
 
         [ObservableProperty]
         private List<string> _highlightColors;
+
+        [ObservableProperty]
+        private string _tagsFilePath;
+
+        [ObservableProperty]
+        private string _autofillSuggestionsDisplay;
+
+        // Holds all the tag suggestions loaded from the CSV file.
+        private List<TagSuggestion> _tagSuggestions = new List<TagSuggestion>();
+
+        // Collection bound to the ListBox in the XAML.
+        public ObservableCollection<TagSuggestion> TagSuggestions { get; } = new ObservableCollection<TagSuggestion>();
 
         private Dictionary<string, string> ColorNameToHex { get; } = new Dictionary<string, string>
         {
@@ -164,6 +178,7 @@ namespace DatasetProcessor.ViewModels
             _configs = configs;
 
             InputFolderPath = _configs.Configurations.TagEditorConfigs.InputFolder;
+            TagsFilePath = _configs.Configurations.TagEditorConfigs.TagsInputFile;
             _fileManipulator.CreateFolderIfNotExist(InputFolderPath);
             IsExactFilter = _configs.Configurations.TagEditorConfigs.ExactMatchesFiltering;
             ButtonEnabled = true;
@@ -351,6 +366,81 @@ namespace DatasetProcessor.ViewModels
         }
 
         /// <summary>
+        /// Selects a .csv file
+        /// </summary>
+        [RelayCommand]
+        private async Task SelectTagsFileAsync()
+        {
+            string result = await SelectCsvFileAsync();
+            if (!string.IsNullOrEmpty(result))
+            {
+                TagsFilePath = result;
+                await RefreshTagsAsync();
+            }
+        }
+
+        [RelayCommand]
+        public async Task RefreshTagsAsync()
+        {
+            if (string.IsNullOrWhiteSpace(TagsFilePath))
+                return;
+
+            try
+            {
+                // Process the CSV file on a background thread.
+                var newTagSuggestions = await Task.Run(() =>
+                {
+                    var suggestions = new List<TagSuggestion>();
+                    int index = 0;
+                    foreach (var line in File.ReadLines(TagsFilePath))
+                    {
+                        if (string.IsNullOrWhiteSpace(line))
+                            continue;
+
+                        // Assuming the CSV columns are comma-separated.
+                        var parts = line.Split(',');
+                        if (parts.Length < 3)
+                            continue;
+
+                        string tag = parts[0].Trim();
+
+                        if (!int.TryParse(parts[1].Trim(), out int colorCode))
+                            continue;
+
+                        if (!long.TryParse(parts[2].Trim(), out long count))
+                            continue;
+
+                        suggestions.Add(new TagSuggestion
+                        {
+                            Tag = tag,
+                            ColorCode = colorCode,
+                            Count = count
+                        });
+
+                        // Post the logging call to the UI thread.
+                        Dispatcher.UIThread.Post(() =>
+                            Logger.SetLatestLogMessage($"Entry {index} loaded", LogMessageColor.Informational));
+
+                        index++;
+                    }
+                    return suggestions;
+                });
+
+                // Update the ObservableCollection on the UI thread.
+                TagSuggestions.Clear();
+                foreach (var suggestion in newTagSuggestions)
+                {
+                    TagSuggestions.Add(suggestion);
+                }
+            }
+            catch (Exception ex)
+            {
+                await Dispatcher.UIThread.InvokeAsync(() =>
+                    Logger.SetLatestLogMessage($"Error: {ex.Message}", LogMessageColor.Error));
+            }
+        }
+
+        /// <summary>
         /// Copies the current image tags to the clipboard asynchronously.
         /// </summary>
         [RelayCommand]
@@ -518,6 +608,39 @@ namespace DatasetProcessor.ViewModels
             }
 
             return imageBitmap;
+        }
+    }
+
+    /// <summary>
+    /// Represents a single tag suggestion parsed from the CSV.
+    /// </summary>
+    public class TagSuggestion
+    {
+        public string Tag { get; set; }
+        public int ColorCode { get; set; }
+        public long Count { get; set; }
+
+        // Display text shows the tag and formatted count (without the color).
+        public string DisplayText => $"{Tag} ({FormatCount(Count)})";
+
+        // Returns a brush based on the color code.
+        public IBrush ColorBrush => ColorCode switch
+        {
+            1 => new SolidColorBrush(Color.Parse("#ff8a8b")),
+            3 => new SolidColorBrush(Color.Parse("#c797ff")),
+            4 => new SolidColorBrush(Color.Parse("#35c64a")),
+            5 => new SolidColorBrush(Color.Parse("#ead084")),
+            _ => new SolidColorBrush(Color.Parse("#009be6")),
+        };
+
+        private string FormatCount(long count)
+        {
+            if (count >= 1_000_000)
+                return (count / 1_000_000.0).ToString("0.#") + "m";
+            else if (count >= 1_000)
+                return (count / 1_000.0).ToString("0.#") + "k";
+            else
+                return count.ToString();
         }
     }
 }

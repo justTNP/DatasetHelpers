@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
-using Avalonia.Input;
 
 using DatasetProcessor.src.Classes;
 using DatasetProcessor.ViewModels;
@@ -24,8 +23,6 @@ namespace DatasetProcessor.Views
     public partial class TagEditorView : UserControl
     {
         private readonly IInputHooksService _inputHooks;
-
-        private Color _highlightTextColor = Color.FromArgb(255, 255, 179, 71);
 
         private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
         private TimeSpan _highlightUpdateDelay = TimeSpan.FromSeconds(0.75);
@@ -65,9 +62,7 @@ namespace DatasetProcessor.Views
             {
                 string[] tagsToHighlight = EditorHighlight.Text.Replace(", ", ",").Split(",");
 
-                List<Color> highlightColors = _viewModel.HighlightColors
-                    .Select(hexCode => Color.Parse(hexCode))
-                    .ToList();
+                List<Color> highlightColors = [.. _viewModel.HighlightColors.Select(Color.Parse)];
 
                 EditorTags.SyntaxHighlighting = new TagsSyntaxHighlight(highlightColors, tagsToHighlight);
             }

@@ -227,7 +227,19 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private string _editorInputFolder;
         [ObservableProperty]
+        private string _editorTagsInputFolder;
+        [ObservableProperty]
         private bool _editorExactMatches;
+        [ObservableProperty]
+        private string _tagHighlightColor1;
+        [ObservableProperty]
+        private string _tagHighlightColor2;
+        [ObservableProperty]
+        private string _tagHighlightColor3;
+        [ObservableProperty]
+        private string _tagHighlightColor4;
+        [ObservableProperty]
+        private string _tagHighlightColor5;
 
         [ObservableProperty]
         private bool _showExtractSubsetSettings;
@@ -292,21 +304,6 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private bool _showMetadataViewerSettings;
         // TODO: Add configs for Metadata page.
-
-        [ObservableProperty]
-        private string _tagHighlightColor1;
-
-        [ObservableProperty]
-        private string _tagHighlightColor2;
-
-        [ObservableProperty]
-        private string _tagHighlightColor3;
-
-        [ObservableProperty]
-        private string _tagHighlightColor4;
-
-        [ObservableProperty]
-        private string _tagHighlightColor5;
 
         public List<string> ColorOptions { get; } = new List<string>
         {
@@ -395,6 +392,7 @@ namespace DatasetProcessor.ViewModels
 
             EditorInputFolder = Configs.Configurations.TagEditorConfigs.InputFolder;
             EditorExactMatches = Configs.Configurations.TagEditorConfigs.ExactMatchesFiltering;
+            EditorTagsInputFolder = Configs.Configurations.TagEditorConfigs.TagsInputFile;
 
             ExtractSubsetInputFolder = Configs.Configurations.ExtractSubsetConfigs.InputFolder;
             ExtractSubsetOutputFolder = Configs.Configurations.ExtractSubsetConfigs.OutputFolder;
@@ -614,6 +612,16 @@ namespace DatasetProcessor.ViewModels
         }
 
         [RelayCommand]
+        private async Task SelectEditorTagsFileAsync()
+        {
+            string result = await SelectCsvFileAsync();
+            if (!string.IsNullOrEmpty(result))
+            {
+                EditorTagsInputFolder = result;
+            }
+        }
+
+        [RelayCommand]
         private async Task SelectExtractSubsetInputFolderAsync()
         {
             string result = await SelectFolderPath();
@@ -760,6 +768,7 @@ namespace DatasetProcessor.ViewModels
 
             Configs.Configurations.TagEditorConfigs.InputFolder = EditorInputFolder;
             Configs.Configurations.TagEditorConfigs.ExactMatchesFiltering = EditorExactMatches;
+            Configs.Configurations.TagEditorConfigs.TagsInputFile = EditorTagsInputFolder;
 
             Configs.Configurations.ExtractSubsetConfigs.InputFolder = ExtractSubsetInputFolder;
             Configs.Configurations.ExtractSubsetConfigs.OutputFolder = ExtractSubsetOutputFolder;
@@ -832,16 +841,6 @@ namespace DatasetProcessor.ViewModels
         partial void OnGenerateTagsThresholdChanged(double value)
         {
             GenerateTagsThreshold = Math.Round(value, 2);
-        }
-
-        private string GetColorNameFromHex(string hexColor)
-        {
-            return ColorNameToHex.FirstOrDefault(x => x.Value == hexColor).Key ?? "Orange";
-        }
-
-        private string GetHexFromColorName(string colorName)
-        {
-            return ColorNameToHex.TryGetValue(colorName, out string hexColor) ? hexColor : "#FFB347";
         }
     }
 }

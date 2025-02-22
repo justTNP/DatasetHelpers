@@ -10,6 +10,9 @@ namespace Models.Configurations
         [JsonPropertyName("exactMatchesFiltering")]
         public bool ExactMatchesFiltering { get; set; } = false;
 
+        [JsonPropertyName("tagsInputFile")]
+        public string TagsInputFile { get; set; } = string.Empty;
+
         [JsonPropertyName("tagHighlightColor1")]
         public string TagHighlightColor1 { get; set; } = "Orange";
 

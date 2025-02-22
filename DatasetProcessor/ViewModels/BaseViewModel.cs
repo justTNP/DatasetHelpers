@@ -147,6 +147,39 @@ public partial class BaseViewModel : ObservableObject
     }
 
     /// <summary>
+    /// Selects a file path using the folder picker dialog and returns the selected file's path.
+    /// </summary>
+    /// <returns>The path of the selected file, or an empty string if no folder was selected.</returns>
+    protected async Task<string> SelectCsvFileAsync()
+    {
+        string resultFile = string.Empty;
+
+        // Create file picker options for CSV files.
+        var csvPickerOptions = new FilePickerOpenOptions
+        {
+            AllowMultiple = false,
+            Title = "Select a CSV File",
+            FileTypeFilter = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("CSV Files")
+                {
+                    // Patterns should include a wildcard (e.g. "*.csv")
+                    Patterns = new List<string> { "*.csv" }
+                }
+            }
+        };
+
+        // Open the file picker using the storage provider.
+        IReadOnlyList<IStorageFile> result = await _storageProvider.OpenFilePickerAsync(csvPickerOptions);
+        if (result?.Count > 0)
+        {
+            resultFile = result[0].Path.LocalPath;
+        }
+
+        return resultFile;
+    }
+
+    /// <summary>
     /// Copies the provided text to the clipboard asynchronously.
     /// </summary>
     /// <param name="text">The text to be copied to the clipboard.</param>

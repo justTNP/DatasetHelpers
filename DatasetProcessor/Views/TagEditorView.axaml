@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:DatasetProcessor.ViewModels"
+			 xmlns:local="clr-namespace:DatasetProcessor.ViewModels"
 			 xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
 			 xmlns:controls="clr-namespace:DatasetProcessor.UserControls"
 			 mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="768"
@@ -39,8 +40,25 @@
 				</Panel>
 			</Button>
 		</Grid>
+		<!-- CSV FILE INPUT -->
+		<Grid Classes="gridSecondary" Grid.Row="2" ColumnDefinitions="auto, 10, *, 10, auto">
+			<Button Grid.Column="0"
+					Content="Select csv"
+					Width="180"
+					Height="40"
+					Command="{Binding SelectTagsFileCommand}"/>
+			<Label Grid.Column="2"
+				Content="{Binding TagsFilePath}"
+				HorizontalAlignment="Left"
+				VerticalAlignment="Center"/>
+			<Button Grid.Column="4"
+					Content="Refresh"
+					Width="140"
+					Height="40"
+					Command="{Binding RefreshTagsCommand}"/>
+		</Grid>
 		<!-- CURRENT FILE INFORMATION PANEL -->
-		<Grid Classes="gridSecondary" Grid.Row="2"
+		<Grid Classes="gridSecondary" Grid.Row="4"
 			  ColumnDefinitions="1*, 10, 1*, 10, 1*, 10, 1*, 1*"
 			  Height="40">
 			<Label Grid.Column="0"
@@ -55,7 +73,7 @@
 					  VerticalAlignment="Center"/>
 		</Grid>
 		<!-- FILTER BUTTONS BAR -->
-		<Grid Classes="gridSecondary" Grid.Row="4"
+		<Grid Classes="gridSecondary" Grid.Row="6"
 			  ColumnDefinitions="4*, 10, 1*, 10, 1*, 10, auto"
 			  Height="60">
 			<TextBox Grid.Column="0"
@@ -79,7 +97,7 @@
 			</Button>
 		</Grid>
 		<!-- IMAGE PANEL -->
-		<Grid Grid.Row="6" Background="Transparent"
+		<Grid Grid.Row="8" Background="Transparent"
 			  ColumnDefinitions="50, 10, 1*, 10, 50, 10, 1*"
 			  RowDefinitions="*, 10">
 			<!-- BACKWARDS BUTTONS -->
@@ -181,17 +199,48 @@
 					  Classes="gridSecondary"
 					  RowDefinitions="2*, 10, auto, 10, 1*, 10, auto">
 					<!-- TAGS EDITOR -->
-					<AvaloniaEdit:TextEditor Grid.Row="0"
-											 x:Name="EditorTags"
-											 Padding="10"
-											 VerticalScrollBarVisibility="Auto"
-											 HorizontalScrollBarVisibility="Disabled"									
-											 SyntaxHighlighting="True"
-											 Background="{DynamicResource SurfaceDark}"
-											 BorderBrush="{DynamicResource Primary}"
-											 BorderThickness="1"
-											 FontSize="17"
-											 FontWeight="Light"/>
+					<Grid>
+					<!-- Define one row -->
+					<Grid.RowDefinitions>
+						<RowDefinition Height="300"/>
+					</Grid.RowDefinitions>
+					<!-- Nested grid with two columns -->
+					<Grid Grid.Row="0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="3*"/>
+							<ColumnDefinition Width="*"/>
+						</Grid.ColumnDefinitions>
+						
+						<!-- Tag input area -->
+						<AvaloniaEdit:TextEditor Grid.Column="0"
+												x:Name="EditorTags"
+												Padding="10"
+												VerticalScrollBarVisibility="Auto"
+												HorizontalScrollBarVisibility="Disabled"
+												SyntaxHighlighting="True"
+												Background="{DynamicResource SurfaceDark}"
+												BorderBrush="{DynamicResource Primary}"
+												BorderThickness="1"
+												FontSize="17"
+												FontWeight="Light"/>
+						
+						<!-- Suggestions display area using a ListBox -->
+						<ListBox Grid.Column="1"
+								x:Name="SuggestionsListBox"
+								Padding="10"
+								Background="{DynamicResource SurfaceDark}"
+								BorderBrush="{DynamicResource Primary}"
+								BorderThickness="1"
+								FontSize="13"
+								ItemsSource="{Binding TagSuggestions}">
+							<ListBox.ItemTemplate>
+								<DataTemplate DataType="local:TagSuggestion">
+									<TextBlock Text="{Binding DisplayText}" Foreground="{Binding ColorBrush}" />
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Grid>
+					</Grid>
 					<Label Grid.Row="2" 
 						   Foreground="{Binding TokenTextColor}"
 						   Content="{Binding CurrentImageTokenCount}"
