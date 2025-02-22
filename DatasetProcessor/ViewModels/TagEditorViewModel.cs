@@ -18,7 +18,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace DatasetProcessor.ViewModels
@@ -77,11 +76,19 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private string _autofillSuggestionsDisplay;
 
-        // Holds all the tag suggestions loaded from the CSV file.
-        private List<TagSuggestion> _tagSuggestions = new List<TagSuggestion>();
-
         // Collection bound to the ListBox in the XAML.
         public ObservableCollection<TagSuggestion> TagSuggestions { get; } = new ObservableCollection<TagSuggestion>();
+
+        // Backing list for all suggestions (unfiltered).
+        private List<TagSuggestion> _allTagSuggestions = new List<TagSuggestion>();
+
+        // New property bound to the filter TextBox.
+        [ObservableProperty]
+        private string _filterText;
+
+        // Bind this property to the TextEditor's Text.
+        [ObservableProperty]
+        private string _editorTagsText;
 
         private Dictionary<string, string> ColorNameToHex { get; } = new Dictionary<string, string>
         {
@@ -426,17 +433,49 @@ namespace DatasetProcessor.ViewModels
                     return suggestions;
                 });
 
-                // Update the ObservableCollection on the UI thread.
-                TagSuggestions.Clear();
-                foreach (var suggestion in newTagSuggestions)
-                {
-                    TagSuggestions.Add(suggestion);
-                }
+                // Update the backing list for filtering.
+                _allTagSuggestions = newTagSuggestions;
+
+                // Now update the filtered list.
+                FilterTagSuggestions();
             }
             catch (Exception ex)
             {
                 await Dispatcher.UIThread.InvokeAsync(() =>
                     Logger.SetLatestLogMessage($"Error: {ex.Message}", LogMessageColor.Error));
+            }
+        }
+
+        partial void OnFilterTextChanged(string value)
+        {
+            FilterTagSuggestions();
+        }
+
+        /// <summary>
+        /// Filters the suggestions based on FilterText.
+        /// </summary>
+        private void FilterTagSuggestions()
+        {
+            // Clear the current filtered list.
+            TagSuggestions.Clear();
+
+            // Start with all suggestions.
+            IEnumerable<TagSuggestion> filtered = _allTagSuggestions;
+
+            // If the filter text is not empty, filter tags that begin with the entered text (case-insensitive).
+            if (!string.IsNullOrWhiteSpace(FilterText))
+            {
+                filtered = filtered.Where(suggestion => 
+                    suggestion.Tag.StartsWith(FilterText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // Sort the results in descending order based on the count.
+            filtered = filtered.OrderByDescending(suggestion => suggestion.Count);
+
+            // Add each suggestion to the ObservableCollection.
+            foreach (var suggestion in filtered)
+            {
+                TagSuggestions.Add(suggestion);
             }
         }
 

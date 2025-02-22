@@ -207,8 +207,10 @@
 					<!-- Nested grid with two columns -->
 					<Grid Grid.Row="0">
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="3*"/>
-							<ColumnDefinition Width="*"/>
+						<!-- Left: main TextEditor for tag entry -->
+						<ColumnDefinition Width="3*"/>
+						<!-- Right: Suggestions and filter input -->
+						<ColumnDefinition Width="*"/>
 						</Grid.ColumnDefinitions>
 						
 						<!-- Tag input area -->
@@ -223,6 +225,15 @@
 												BorderThickness="1"
 												FontSize="17"
 												FontWeight="Light"/>
+						
+						<!-- Nested grid for Suggestions and Filter box in the right column -->
+						<Grid Grid.Column="1">
+						<Grid.RowDefinitions>
+							<!-- ListBox takes 6 parts -->
+							<RowDefinition Height="5*"/>
+							<!-- Filter TextBox takes 1 part -->
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
 						
 						<!-- Suggestions display area using a ListBox -->
 						<ListBox Grid.Column="1"
@@ -239,6 +250,13 @@
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 						</ListBox>
+						
+						<!-- Filter input box -->
+						<TextBox Grid.Row="1"
+								Margin="0,10,0,0"
+								Watermark="Type to filter..."
+								Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+						</Grid>
 					</Grid>
 					</Grid>
 					<Label Grid.Row="2" 
