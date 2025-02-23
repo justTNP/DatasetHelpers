@@ -6,10 +6,18 @@
 			 xmlns:local="clr-namespace:DatasetProcessor.ViewModels"
 			 xmlns:AvaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
 			 xmlns:controls="clr-namespace:DatasetProcessor.UserControls"
+			 xmlns:bold="clr-namespace:DatasetProcessor.src.Classes"
 			 mc:Ignorable="d" d:DesignWidth="1300" d:DesignHeight="768"
 			 x:Class="DatasetProcessor.Views.TagEditorView"
              x:DataType="vm:TagEditorViewModel"			
 			 Background="{DynamicResource SecondarySurfaceDark}">
+	<UserControl.Resources>
+		<bold:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
+		<DataTemplate x:Key="TagSuggestionTemplate" DataType="local:TagSuggestion">
+			<TextBlock Foreground="{Binding ColorBrush}" DoubleTapped="TagDoubleTapped"
+					bold:InlineBindingBehavior.InlineSource="{Binding FormattedParts}" />
+		</DataTemplate>
+	</UserControl.Resources>
 	<Design.DesignStyle>
 		<StyleInclude Source="/Assets/Styles/GlobalStyles.axaml" />
 	</Design.DesignStyle>
@@ -235,20 +243,14 @@
 						
 						<!-- Suggestions display area using a ListBox -->
 						<ListBox Grid.Column="1"
-								x:Name="SuggestionsListBox"
-								Padding="10"
-								Background="{DynamicResource SurfaceDark}"
-								BorderBrush="{DynamicResource Primary}"
-								BorderThickness="1"
-								FontSize="13"
-								ItemsSource="{Binding TagSuggestions}">
-							<ListBox.ItemTemplate>
-								<DataTemplate DataType="local:TagSuggestion">
-									<TextBlock Text="{Binding DisplayText}" Foreground="{Binding ColorBrush}" 
-                       				DoubleTapped="TagDoubleTapped"/>
-								</DataTemplate>
-							</ListBox.ItemTemplate>
-						</ListBox>
+								 x:Name="SuggestionsListBox"
+								 Padding="10"
+								 Background="{DynamicResource SurfaceDark}"
+								 BorderBrush="{DynamicResource Primary}"
+								 BorderThickness="1"
+								 FontSize="13"
+								 ItemsSource="{Binding TagSuggestions}"
+								 ItemTemplate="{StaticResource TagSuggestionTemplate}" />
 						
 						<!-- Filter input box -->
 						<TextBox Grid.Row="1"

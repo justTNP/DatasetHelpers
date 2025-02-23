@@ -73,9 +73,6 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private string _tagsFilePath;
 
-        [ObservableProperty]
-        private string _autofillSuggestionsDisplay;
-
         // Collection bound to the ListBox in the XAML.
         public ObservableCollection<TagSuggestion> TagSuggestions { get; } = new ObservableCollection<TagSuggestion>();
 
@@ -424,10 +421,6 @@ namespace DatasetProcessor.ViewModels
                             Count = count
                         });
 
-                        // Post the logging call to the UI thread.
-                        Dispatcher.UIThread.Post(() =>
-                            Logger.SetLatestLogMessage($"Entry {index} loaded", LogMessageColor.Informational));
-
                         index++;
                     }
                     return suggestions;
@@ -456,25 +449,24 @@ namespace DatasetProcessor.ViewModels
         /// </summary>
         private void FilterTagSuggestions()
         {
-            // Clear the current filtered list.
             TagSuggestions.Clear();
-
-            // Start with all suggestions.
             IEnumerable<TagSuggestion> filtered = _allTagSuggestions;
-
-            // If the filter text is not empty, filter tags that begin with the entered text (case-insensitive).
+            
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
-                filtered = filtered.Where(suggestion => 
-                    suggestion.Tag.StartsWith(FilterText, StringComparison.OrdinalIgnoreCase));
+                // Split the filter text into tokens using underscore (or add other delimiters as needed)
+                var tokens = FilterText.Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                
+                filtered = filtered.Where(suggestion =>
+                    tokens.All(token => suggestion.Tag.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0));
             }
-
-            // Sort the results in descending order based on the count.
+            
             filtered = filtered.OrderByDescending(suggestion => suggestion.Count);
-
-            // Add each suggestion to the ObservableCollection.
+            
+            // Update each suggestion’s formatted parts based on the current filter.
             foreach (var suggestion in filtered)
             {
+                suggestion.UpdateFormattedParts(FilterText);
                 TagSuggestions.Add(suggestion);
             }
         }
@@ -659,8 +651,10 @@ namespace DatasetProcessor.ViewModels
         public int ColorCode { get; set; }
         public long Count { get; set; }
 
-        // Display text shows the tag and formatted count (without the color).
-        public string DisplayText => $"{Tag} ({FormatCount(Count)})";
+        public string FormattedCount => FormatCount(Count);
+
+        // New property: collection of text parts (normal or bold)
+        public ObservableCollection<TextPart> FormattedParts { get; private set; } = new ObservableCollection<TextPart>();
 
         // Returns a brush based on the color code.
         public IBrush ColorBrush => ColorCode switch
@@ -672,6 +666,80 @@ namespace DatasetProcessor.ViewModels
             _ => new SolidColorBrush(Color.Parse("#009be6")),
         };
 
+        /// <summary>
+        /// Updates FormattedParts by splitting Tag into segments that are bolded if they match any token from filter.
+        /// </summary>
+        public void UpdateFormattedParts(string filter)
+        {
+            FormattedParts.Clear();
+            if (string.IsNullOrWhiteSpace(filter))
+            {
+                FormattedParts.Add(new TextPart { Text = Tag, IsBold = false });
+                return;
+            }
+            
+            // Split the filter string into tokens (e.g. using '_' as delimiter)
+            var tokens = filter.Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+            var intervals = new List<(int start, int end)>();
+            
+            // Find all occurrences for each token (case-insensitive)
+            foreach (var token in tokens)
+            {
+                int startIndex = 0;
+                while (true)
+                {
+                    int index = Tag.IndexOf(token, startIndex, StringComparison.OrdinalIgnoreCase);
+                    if (index < 0)
+                        break;
+                    intervals.Add((index, index + token.Length));
+                    startIndex = index + token.Length;
+                }
+            }
+            
+            if (intervals.Count == 0)
+            {
+                FormattedParts.Add(new TextPart { Text = Tag, IsBold = false });
+                return;
+            }
+            
+            // Merge overlapping intervals
+            intervals = intervals.OrderBy(i => i.start).ToList();
+            var merged = new List<(int start, int end)>();
+            var current = intervals[0];
+            foreach (var interval in intervals.Skip(1))
+            {
+                if (interval.start <= current.end)
+                {
+                    current = (current.start, Math.Max(current.end, interval.end));
+                }
+                else
+                {
+                    merged.Add(current);
+                    current = interval;
+                }
+            }
+            merged.Add(current);
+            
+            // Create parts from the merged intervals.
+            int currentIndex = 0;
+            foreach (var interval in merged)
+            {
+                if (interval.start > currentIndex)
+                {
+                    FormattedParts.Add(new TextPart { Text = Tag.Substring(currentIndex, interval.start - currentIndex), IsBold = false });
+                }
+                FormattedParts.Add(new TextPart { Text = Tag.Substring(interval.start, interval.end - interval.start), IsBold = true });
+                currentIndex = interval.end;
+            }
+            if (currentIndex < Tag.Length)
+            {
+                FormattedParts.Add(new TextPart { Text = Tag.Substring(currentIndex), IsBold = false });
+            }
+        }
+        
+        // For non-formatted display if needed.
+        public string DisplayText => $"{Tag} ({FormatCount(Count)})";
+
         private string FormatCount(long count)
         {
             if (count >= 1_000_000)
@@ -682,4 +750,11 @@ namespace DatasetProcessor.ViewModels
                 return count.ToString();
         }
     }
+
+    public class TextPart
+    {
+        public string Text { get; set; }
+        public bool IsBold { get; set; }
+    }
+
 }

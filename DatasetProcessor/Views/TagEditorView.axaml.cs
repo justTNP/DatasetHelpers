@@ -154,11 +154,33 @@ namespace DatasetProcessor.Views
             // Ensure the sender is a TextBlock with the proper DataContext.
             if (sender is TextBlock textBlock && textBlock.DataContext is TagSuggestion suggestion)
             {
-                // Remove underscores from the tag.
+                // If the Shift key is held down, open a webpage.
+                if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
+                {
+                    // Build a URL based on the tag.
+                    // Here, we're using the tag directly; you may need to URL encode it.
+                    string url = "https://danbooru.donmai.us/wiki_pages/" + Uri.EscapeDataString(suggestion.Tag);
+                    try
+                    {
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = url,
+                            UseShellExecute = true
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        // Optionally log the error or notify the user.
+                        Debug.WriteLine("Error opening URL: " + ex.Message);
+                    }
+                    return;
+                }
+
+                // Otherwise, proceed to append the tag to the TextEditor.
                 string cleanTag = suggestion.Tag.Replace("_", " ");
 
                 // Reference the TextEditor by its name (assumed to be "EditorTags").
-                // Append the tag according to the current content:
+                // Append the tag according to the current content.
                 if (!string.IsNullOrWhiteSpace(EditorTags.Text))
                 {
                     // If there is existing content, prepend with a comma and space.
