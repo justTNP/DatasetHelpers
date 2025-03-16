@@ -181,15 +181,25 @@ namespace DatasetProcessor.Views
 
                 // Reference the TextEditor by its name (assumed to be "EditorTags").
                 // Append the tag according to the current content.
-                if (!string.IsNullOrWhiteSpace(EditorTags.Text))
+                if (string.IsNullOrWhiteSpace(EditorTags.Text))
                 {
-                    // If there is existing content, prepend with a comma and space.
-                    EditorTags.Text += ", " + cleanTag;
+                    // If the content is empty, add the tag.
+                    EditorTags.Text = cleanTag;
+                }
+                else if (EditorTags.Text.EndsWith(", "))
+                {
+                    // If the content ends with a comma and a space, add the tag.
+                    EditorTags.Text += cleanTag;
+                }
+                else if (EditorTags.Text.EndsWith(","))
+                {
+                    // If the content ends with only a comma, add a space, then the tag.
+                    EditorTags.Text += " " + cleanTag;
                 }
                 else
                 {
-                    // If the TextEditor is empty, append the tag followed by a comma and space.
-                    EditorTags.Text = cleanTag + ", ";
+                    // Fallback: if the content doesn't end with a comma at all, add a comma, a space, then the tag.
+                    EditorTags.Text += ", " + cleanTag;
                 }
             }
         }
