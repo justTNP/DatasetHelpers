@@ -64,9 +64,6 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private SolidColorBrush _tokenTextColor;
 
-        private bool _showBlurredImage;
-        private MemoryStream _currentImageMemoryStream = null;
-
         [ObservableProperty]
         private List<string> _highlightColors;
 
@@ -86,6 +83,9 @@ namespace DatasetProcessor.ViewModels
         // Bind this property to the TextEditor's Text.
         [ObservableProperty]
         private string _editorTagsText;
+
+        [ObservableProperty]
+        private bool _isImagePopupVisible;
 
         private Dictionary<string, string> ColorNameToHex { get; } = new Dictionary<string, string>
         {
@@ -265,41 +265,6 @@ namespace DatasetProcessor.ViewModels
         {
             EditingTxt = !EditingTxt;
             OnPropertyChanged(nameof(CurrentType));
-        }
-
-        /// <summary>
-        /// Toggles the display of a blurred image for the currently selected image asynchronously.
-        /// </summary>
-        [RelayCommand]
-        public async Task BlurImageAsync()
-        {
-            _showBlurredImage = !_showBlurredImage;
-            try
-            {
-                if (_showBlurredImage)
-                {
-                    await Dispatcher.UIThread.InvokeAsync(async () =>
-                    {
-                        MemoryStream imageMemoryStream = await _imageProcessor.GetBlurredImageAsync(ImageFiles[SelectedItemIndex]);
-                        imageMemoryStream.Seek(0, SeekOrigin.Begin);
-                        _currentImageMemoryStream?.Dispose();
-                        MemoryStream imageMemoryStreamCopy = new MemoryStream(imageMemoryStream.ToArray());
-                        SelectedImage = new Bitmap(imageMemoryStream);
-                        await imageMemoryStream.DisposeAsync();
-                    });
-                }
-                else
-                {
-                    await Dispatcher.UIThread.InvokeAsync(() =>
-                    {
-                        SelectedImage = SelectBitmapInterpolation();
-                    });
-                }
-            }
-            catch
-            {
-                Logger.SetLatestLogMessage($"Something went wrong while loading blurred image!", LogMessageColor.Warning);
-            }
         }
 
         /// <summary>
@@ -639,6 +604,17 @@ namespace DatasetProcessor.ViewModels
             }
 
             return imageBitmap;
+        }
+
+        // Command to show the full-screen image pop-up
+        [RelayCommand]
+        private void ShowImageFullScreen()
+        {
+            var popup = new DatasetProcessor.Views.ImagePopupOverlay
+            {
+                DataContext = this // Assuming SelectedImage is part of this view model.
+            };
+            popup.Show();
         }
     }
 

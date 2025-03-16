@@ -1,0 +1,62 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="DatasetProcessor.Views.ImagePopupOverlay"
+        SystemDecorations="None"
+        ExtendClientAreaToDecorationsHint="True"
+        Background="Black"
+        WindowState="Maximized"
+        Topmost="True"
+        Focusable="True"
+        KeyDown="Window_KeyDown"
+        PointerPressed="Window_PointerPressed"
+        PointerMoved="Window_PointerMoved"
+        PointerReleased="Window_PointerReleased"
+        PointerWheelChanged="Window_PointerWheelChanged">
+    
+    <Grid>
+        <!-- Image with zoom and pan capabilities -->
+        <Image x:Name="FullScreenImage"
+               Source="{Binding SelectedImage, Mode=TwoWay}"
+               Stretch="Uniform"
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
+               
+        <!-- Zoom level indicator -->
+        <Border Background="#99000000" 
+                CornerRadius="4"
+                Padding="8,4"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0,0,20,20">
+            <TextBlock x:Name="ZoomLevelText" 
+                       Text="Zoom: 100%" 
+                       Foreground="White"/>
+        </Border>
+        
+        <!-- Help text overlay - only visible initially -->
+        <Border x:Name="HelpOverlay"
+                Background="#99000000"
+                CornerRadius="4"
+                Padding="12,8"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Top"
+                Margin="0,20,0,0">
+            <StackPanel>
+                <TextBlock Text="Image Viewer Controls" 
+                           Foreground="White"
+                           FontWeight="Bold"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,8"/>
+                <TextBlock Foreground="White">
+                    <Run>• Use mouse wheel to zoom in/out (up to 1000%)</Run>
+                    <LineBreak/>
+                    <Run>• Click and drag to pan when zoomed in</Run>
+                    <LineBreak/>
+                    <Run>• Right-click or press ESC to close</Run>
+                    <LineBreak/>
+                    <Run>• Press H to dismiss this window</Run>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

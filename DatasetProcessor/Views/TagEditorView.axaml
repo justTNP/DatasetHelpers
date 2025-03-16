@@ -133,19 +133,20 @@
 			</Grid>
 
 			<!-- IMAGE DISPLAY -->
-			<Grid Classes="gridPrimary" Grid.Column="2"
-				  MaxHeight="512" MinHeight="512"
-				  MaxWidth="512" MinWidth="512">
-				<Button Classes="transparentButton"						
+			<Grid Grid.Column="2"
+				MaxHeight="512" MinHeight="512"
+				MaxWidth="512" MinWidth="512">
+			<!-- Clicking this button shows the full-screen popup -->
+				<Button Classes="transparentButton"
 						MaxHeight="512" MinHeight="512"
 						MaxWidth="512" MinWidth="512"
-						Command="{Binding BlurImageCommand}"
+						Command="{Binding ShowImageFullScreenCommand}"
 						x:Name="ImagePanel">
 					<Panel Margin="0">
-						<Image HorizontalAlignment="Center"
-							   VerticalAlignment="Center"
-							   Source="{Binding SelectedImage, Mode=TwoWay}"/>
-						</Panel>
+					<Image HorizontalAlignment="Center"
+							VerticalAlignment="Center"
+							Source="{Binding SelectedImage, Mode=TwoWay}"/>
+					</Panel>
 				</Button>
 			</Grid>
 
