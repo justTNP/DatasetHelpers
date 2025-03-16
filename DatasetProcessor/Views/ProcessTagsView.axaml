@@ -154,7 +154,7 @@
 									TextAlignment="Center"
 									FontWeight="Light"
 									Foreground="{DynamicResource Secondary}"
-									Text="Note: You can leave any of the text fields empty and still use the Randomize, Rename, Redundancy Removal and Tag Consolidation features." />
+									Text="Note: You can leave any of the text fields empty and still use the Randomize, Rename, Redundancy Removal and Tag Consolidation features.&#xa;Frequency List: Double-click a tag to send it to the Tags to Remove box. Shift + Double-click to send it to the Tags to Emphsize box." />
 						</Panel>
 						<Separator Grid.Row="9"/>
 						<!-- CURRENTLY PROCESSING -->
@@ -193,29 +193,35 @@
 			<GridSplitter Grid.Column="1" Background="{DynamicResource SecondarySurfaceDark}" />
 
 			<!-- Right Column -->
-            <Grid Grid.Column="2" RowDefinitions="auto, *">
-                <TextBlock Text="Tag Frequency Analysis" 
-                            FontSize="18" 
-                            FontWeight="Bold" 
-                            Margin="0,0,0,10" 
-                            HorizontalAlignment="Center"/>
-                <Grid Grid.Row="1" Classes="gridSecondary" RowDefinitions="auto, 10, *, 10, auto">
-                    <Label Grid.Row="0" 
-							Margin="0,5,0,20"
-                        	Content="Summary of tags by frequency:"/>
-                    <Button Grid.Row="1"
+			<Grid Grid.Column="2" RowDefinitions="auto, *">
+				<TextBlock Text="Tag Frequency Analysis" 
+						FontSize="18" 
+						FontWeight="Bold" 
+						Margin="0,0,0,10" 
+						HorizontalAlignment="Center"/>
+				<Grid Grid.Row="1" Classes="gridSecondary" RowDefinitions="auto, 10, *, 10, auto">
+					<Label Grid.Row="0" 
+						Margin="0,5,0,20"
+						Content="Summary of tags by frequency:"/>
+					<Button Grid.Row="1"
 							Margin="0,15,0,30"
-                        	Content="Calculate frequency"
-                            HorizontalAlignment="Center"
-                            Command="{Binding CalculateByFrequencyCommand}"/>
-                    <TextBox Grid.Row="2"
-                             MinHeight="100"
-							 MaxHeight="500"
-							 Margin="0,0,0,300"
-                             Watermark="Click the button to process tags by frequency.&#xa;This will use the .txt files in the input folder."
-                             Text="{Binding SortedByFrequency}"/>
-                </Grid>
-            </Grid>
+							Content="Calculate frequency"
+							HorizontalAlignment="Center"
+							Command="{Binding CalculateByFrequencyCommand}"/>
+					<!-- Changed from TextBox to ListBox -->
+					<ListBox Grid.Row="2"
+							MinHeight="100"
+							MaxHeight="500"
+							Margin="0,0,0,300"
+							ItemsSource="{Binding SortedByFrequencyList}">
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<TextBlock Text="{Binding}" DoubleTapped="TagDoubleTapped"/>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</Grid>
+			</Grid>
 		</Grid>
 	</Grid>
 </UserControl>

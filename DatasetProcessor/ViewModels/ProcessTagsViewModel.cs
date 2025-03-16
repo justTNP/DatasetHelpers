@@ -13,6 +13,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace DatasetProcessor.ViewModels
 {
@@ -46,7 +47,7 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private bool _applyConsolidateTags;
         [ObservableProperty]
-        private string _sortedByFrequency;
+        private ObservableCollection<string> _sortedByFrequencyList;
         [ObservableProperty]
         private string _existingTagToFind;
         [ObservableProperty]
@@ -115,7 +116,7 @@ namespace DatasetProcessor.ViewModels
             ExistingTagToFind = string.Empty;
             TagsToAppend = string.Empty;
             
-            SortedByFrequency = string.Empty;
+            SortedByFrequencyList = new ObservableCollection<string>();
             _timer = new Stopwatch();
 
             IsUiEnabled = true;
@@ -243,7 +244,21 @@ namespace DatasetProcessor.ViewModels
         {
             try
             {
-                SortedByFrequency = _tagProcessor.CalculateListOfMostFrequentTags(InputFolderPath);
+                // Get the frequency analysis result as a single string.
+                string result = _tagProcessor.CalculateListOfMostFrequentTags(InputFolderPath);
+                
+                // Split the result into lines (assuming each frequency is on a new line).
+                var lines = result.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+                
+                // Option 1: Replace the collection entirely:
+                SortedByFrequencyList = new ObservableCollection<string>(lines);
+                
+                // Option 2: Alternatively, update the existing collection:
+                // SortedByFrequencyList.Clear();
+                // foreach(var line in lines)
+                // {
+                //     SortedByFrequencyList.Add(line);
+                // }
             }
             catch (Exception exception)
             {
