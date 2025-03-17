@@ -151,14 +151,13 @@ namespace DatasetProcessor.Views
         /// <param name="e"></param>
         private void TagDoubleTapped(object? sender, TappedEventArgs e)
         {
-            // Ensure the sender is a TextBlock with the proper DataContext.
-            if (sender is TextBlock textBlock && textBlock.DataContext is TagSuggestion suggestion)
+            // Check if the sender is the ListBox
+            if (sender is ListBox listBox && listBox.SelectedItem is TagSuggestion suggestion)
             {
                 // If the Shift key is held down, open a webpage.
                 if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                 {
                     // Build a URL based on the tag.
-                    // Here, we're using the tag directly; you may need to URL encode it.
                     string url = "https://danbooru.donmai.us/wiki_pages/" + Uri.EscapeDataString(suggestion.Tag);
                     try
                     {

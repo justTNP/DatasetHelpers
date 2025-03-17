@@ -213,10 +213,11 @@
 							MinHeight="100"
 							MaxHeight="500"
 							Margin="0,0,0,300"
-							ItemsSource="{Binding SortedByFrequencyList}">
+							ItemsSource="{Binding SortedByFrequencyList}"
+							DoubleTapped="TagDoubleTapped">
 						<ListBox.ItemTemplate>
 							<DataTemplate>
-								<TextBlock Text="{Binding}" DoubleTapped="TagDoubleTapped"/>
+								<TextBlock Text="{Binding}"/>
 							</DataTemplate>
 						</ListBox.ItemTemplate>
 					</ListBox>

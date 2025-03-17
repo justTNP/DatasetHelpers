@@ -14,7 +14,7 @@
 	<UserControl.Resources>
 		<bold:BoolToFontWeightConverter x:Key="BoolToFontWeightConverter"/>
 		<DataTemplate x:Key="TagSuggestionTemplate" DataType="local:TagSuggestion">
-			<TextBlock Foreground="{Binding ColorBrush}" DoubleTapped="TagDoubleTapped"
+			<TextBlock Foreground="{Binding ColorBrush}" 
 					bold:InlineBindingBehavior.InlineSource="{Binding FormattedParts}" />
 		</DataTemplate>
 	</UserControl.Resources>
@@ -244,14 +244,15 @@
 						
 						<!-- Suggestions display area using a ListBox -->
 						<ListBox Grid.Column="1"
-								 x:Name="SuggestionsListBox"
-								 Padding="10"
-								 Background="{DynamicResource SurfaceDark}"
-								 BorderBrush="{DynamicResource Primary}"
-								 BorderThickness="1"
-								 FontSize="13"
-								 ItemsSource="{Binding TagSuggestions}"
-								 ItemTemplate="{StaticResource TagSuggestionTemplate}" />
+								x:Name="SuggestionsListBox"
+								Padding="10"
+								Background="{DynamicResource SurfaceDark}"
+								BorderBrush="{DynamicResource Primary}"
+								BorderThickness="1"
+								FontSize="13"
+								ItemsSource="{Binding TagSuggestions}"
+								ItemTemplate="{StaticResource TagSuggestionTemplate}"
+								DoubleTapped="TagDoubleTapped" />
 						
 						<!-- Filter input box -->
 						<TextBox Grid.Row="1"

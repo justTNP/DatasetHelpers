@@ -16,11 +16,10 @@ namespace DatasetProcessor.Views
 
         private void TagDoubleTapped(object? sender, TappedEventArgs e)
         {
-            // Ensure the sender is a TextBlock with a DataContext of type string (the tag)
-            if (sender is TextBlock textBlock && textBlock.DataContext is string tag)
+            // Get the clicked item from the ListBox
+            if (sender is ListBox listBox && listBox.SelectedItem is string tag)
             {
                 // Remove trailing "=" followed by digits (and an optional comma)
-                // For example, "collared shirt=20," becomes "collared shirt"
                 string processedTag = Regex.Replace(tag, @"=[0-9]+,?$", "");
 
                 if (DataContext is ProcessTagsViewModel vm)
@@ -28,12 +27,10 @@ namespace DatasetProcessor.Views
                     // Check if the Shift key was held during the double-click
                     if (e.KeyModifiers.HasFlag(KeyModifiers.Shift))
                     {
-                        // Append to the TagsToEmphasize TextBox
                         vm.TagsToEmphasize = AppendTag(vm.TagsToEmphasize, processedTag);
                     }
                     else
                     {
-                        // Append to the TagsToRemove TextBox
                         vm.TagsToRemove = AppendTag(vm.TagsToRemove, processedTag);
                     }
                 }
