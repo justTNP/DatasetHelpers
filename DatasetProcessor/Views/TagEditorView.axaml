@@ -67,18 +67,25 @@
 		</Grid>
 		<!-- CURRENT FILE INFORMATION PANEL -->
 		<Grid Classes="gridSecondary" Grid.Row="4"
-			  ColumnDefinitions="1*, 10, 1*, 10, 1*, 10, 1*, 1*"
+			  ColumnDefinitions="1.5*, 10, 1*, 10, 1*, 10, 1.5*, 0.5*"
 			  Height="40">
 			<Label Grid.Column="0"
-				   Content="{Binding SelectedImageFilename}"/>
+					Content="{Binding SelectedImageFilename}"
+					ToolTip.Tip="{Binding SelectedImageFilename}"/>
 			<Label Grid.Column="2"
-				   Content="{Binding CurrentAndTotal}"/>
+					Content="{Binding CurrentAndTotal}"/>
 			<Label Grid.Column="4"
-				   Content="{Binding TotalImageFiles}"/>
-			<CheckBox Grid.Column="6" Grid.ColumnSpan="2"
-					  IsChecked="{Binding IsExactFilter}"
-					  Content="Perform only exact matches when filtering?"
-					  VerticalAlignment="Center"/>
+					Content="{Binding TotalImageFiles}"/>
+			<CheckBox Grid.Column="6" Grid.ColumnSpan="1"
+					IsChecked="{Binding IsExactFilter}"
+					Content="Perform only exact matches when filtering?"
+					VerticalAlignment="Center"/>
+			<Button Grid.Column="7"
+					Width="40" Height="40" HorizontalAlignment="Right" Command="{Binding CopyCurrentImageTagsToClipboardCommand}"
+					ToolTip.Tip="Copy tags of current file to clipboard."> <Panel>
+					<Image Source="{SvgImage /Assets/Icons/content_copy.svg}"/>
+					</Panel>
+			</Button>
 		</Grid>
 		<!-- FILTER BUTTONS BAR -->
 		<Grid Classes="gridSecondary" Grid.Row="6"
@@ -179,32 +186,6 @@
 				  Background="{DynamicResource SurfaceDark}"
 				  RowDefinitions="auto, 10, auto, 10, *">
 				<Grid Grid.Row="0"
-					  Classes="gridSecondary"
-					  ColumnDefinitions="3*, 10, 1*">
-					<Label Grid.Column="0"
-						   Content="Switch between .caption and .txt:"
-						   HorizontalAlignment="Left"
-						   Padding="10"/>
-					<Button Grid.Column="2"
-							MinWidth="80"
-							Content="Switch"
-							Command="{Binding SwitchEditorTypeCommand}"/>
-				</Grid>
-				<Grid Grid.Row="2"
-					  Classes="gridSecondary"
-					  ColumnDefinitions="*, 10, 40">
-					<Label Grid.Column="0"
-						   Content="{Binding CurrentType, StringFormat='Currently editing: {0}.'}"
-						   HorizontalAlignment="Left"
-						   Padding="10"/>
-					<Button Grid.Column="2"
-							Command="{Binding CopyCurrentImageTagsToClipboardCommand}">
-						<Panel>
-							<Image Source="{SvgImage /Assets/Icons/content_copy.svg}"/>
-						</Panel>
-					</Button>
-				</Grid>
-				<Grid Grid.Row="4"
 					Classes="gridSecondary"
 					RowDefinitions="2*, 10, auto, 10, auto, 10, auto, 10, auto">
 
@@ -270,7 +251,7 @@
 								x:Name="EditorHighlight"
 								TextWrapping="Wrap"
 								Background="Transparent"
-								Watermark="Enter words to highlight..."
+								Watermark="Enter words you want to highlight (even if its just part of a tag), separated by commas. For example: 'tag1, tag2'. Leave blank if not applicable. Add a line break to use different highlighting colors."
 								Text="{Binding WordsToHighlight}"/>
 					</Grid>
 
@@ -281,24 +262,24 @@
 
 					<Expander Grid.Row="8" Header="Batch Tag Operations" HorizontalAlignment="Stretch">
 						<StackPanel Spacing="10" Margin="5">
-							<TextBlock Text="Applies to ALL loaded files matching the current type (.txt/.caption)." 
+							<TextBlock Text="Applies to ALL loaded files." 
 									FontSize="11" Foreground="{DynamicResource SecondaryLight}" TextWrapping="Wrap"/>
 
 							<Grid ColumnDefinitions="60, 10, *">
 								<Label Grid.Column="0" Content="Remove:" VerticalAlignment="Center"/>
-								<TextBox Grid.Column="2" Text="{Binding TagsToRemoveEntry}" Watermark="tag1, tag2"/>
+								<TextBox Grid.Column="2" Text="{Binding TagsToRemoveEntry}" Watermark="tag1, tag2, tag3, ..."/>
 							</Grid>
 							
 							<Grid ColumnDefinitions="60, 10, *, 10, *">
 								<Label Grid.Column="0" Content="Replace:" VerticalAlignment="Center"/>
-								<TextBox Grid.Column="2" Text="{Binding TagsToBeReplacedEntry}" Watermark="Target tags"/>
-								<TextBox Grid.Column="4" Text="{Binding TagsToReplaceEntry}" Watermark="New tags"/>
+								<TextBox Grid.Column="2" Text="{Binding TagsToBeReplacedEntry}" Watermark="Tags to replace..."/>
+								<TextBox Grid.Column="4" Text="{Binding TagsToReplaceEntry}" Watermark="Tags to replace with..."/>
 							</Grid>
 
 							<Grid ColumnDefinitions="60, 10, *, 10, *">
 								<Label Grid.Column="0" Content="Append:" VerticalAlignment="Center"/>
-								<TextBox Grid.Column="2" Text="{Binding ExistingTagToFindEntry}" Watermark="After tag..."/>
-								<TextBox Grid.Column="4" Text="{Binding TagsToAppendEntry}" Watermark="Tags to append"/>
+								<TextBox Grid.Column="2" Text="{Binding ExistingTagToFindEntry}" Watermark="tag1"/>
+								<TextBox Grid.Column="4" Text="{Binding TagsToAppendEntry}" Watermark="tag2, tag3, ..."/>
 							</Grid>
 
 							<Button Content="Apply to All Files" 
