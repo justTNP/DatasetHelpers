@@ -432,18 +432,30 @@ namespace DatasetProcessor.ViewModels
         {
             TagSuggestions.Clear();
             IEnumerable<TagSuggestion> filtered = _allTagSuggestions;
-
+            
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
-                // Split the filter text into tokens using underscore (or add other delimiters as needed)
-                var tokens = FilterText.Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
+                List<string> tokens;
+                
+                if (FilterText.Contains("_"))
+                {
+                    tokens = new List<string> { FilterText };
+                }
+                else
+                {
+                    // If no underscore, use the original splitting logic.
+                    // This allows multi-word searches if another delimiter is added later, or if it contains multiple underscores.
+                    // Note: The original implementation only split by '_', so if the filter text contains no '_', 
+                    // this line results in a single-element list anyway.
+                    tokens = FilterText.Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+                }
 
                 filtered = filtered.Where(suggestion =>
                     tokens.All(token => suggestion.Tag.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0));
             }
-
+            
             filtered = filtered.OrderByDescending(suggestion => suggestion.Count);
-
+            
             // Update each suggestion’s formatted parts based on the current filter.
             foreach (var suggestion in filtered)
             {
