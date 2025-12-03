@@ -19,6 +19,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace DatasetProcessor.ViewModels
 {
@@ -70,6 +71,21 @@ namespace DatasetProcessor.ViewModels
         [ObservableProperty]
         private string _tagsFilePath;
 
+        [ObservableProperty]
+        private string _tagsToRemoveEntry;
+
+        [ObservableProperty]
+        private string _tagsToBeReplacedEntry;
+
+        [ObservableProperty]
+        private string _tagsToReplaceEntry;
+
+        [ObservableProperty]
+        private string _existingTagToFindEntry;
+
+        [ObservableProperty]
+        private string _tagsToAppendEntry;
+
         // Collection bound to the ListBox in the XAML.
         public ObservableCollection<TagSuggestion> TagSuggestions { get; } = new ObservableCollection<TagSuggestion>();
 
@@ -106,7 +122,7 @@ namespace DatasetProcessor.ViewModels
         {
             return ColorNameToHex.TryGetValue(colorName, out string hexColor) ? hexColor : "#FFB347";
         }
-        
+
         [RelayCommand]
         public async Task OpenFileAsync()
         {
@@ -416,18 +432,18 @@ namespace DatasetProcessor.ViewModels
         {
             TagSuggestions.Clear();
             IEnumerable<TagSuggestion> filtered = _allTagSuggestions;
-            
+
             if (!string.IsNullOrWhiteSpace(FilterText))
             {
                 // Split the filter text into tokens using underscore (or add other delimiters as needed)
                 var tokens = FilterText.Split(new char[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
-                
+
                 filtered = filtered.Where(suggestion =>
                     tokens.All(token => suggestion.Tag.IndexOf(token, StringComparison.OrdinalIgnoreCase) >= 0));
             }
-            
+
             filtered = filtered.OrderByDescending(suggestion => suggestion.Count);
-            
+
             // Update each suggestion’s formatted parts based on the current filter.
             foreach (var suggestion in filtered)
             {
@@ -615,6 +631,134 @@ namespace DatasetProcessor.ViewModels
                 DataContext = this // Assuming SelectedImage is part of this view model.
             };
             popup.Show();
+        }
+        
+        /// <summary>
+        /// Applies Remove, Replace, and Append logic to ALL loaded text files.
+        /// </summary>
+        [RelayCommand]
+        private async Task ApplyBatchTagOperationsAsync()
+        {
+            if (ImageFiles == null || ImageFiles.Count == 0) return;
+
+            // Perform processing on a background thread to keep UI responsive
+            await Task.Run(() =>
+            {
+                // 1. Parse Inputs
+                var removeSet = string.IsNullOrWhiteSpace(TagsToRemoveEntry) 
+                    ? null 
+                    : TagsToRemoveEntry.Split(',').Select(t => t.Trim()).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+                var replaceTargets = string.IsNullOrWhiteSpace(TagsToBeReplacedEntry) 
+                    ? null 
+                    : TagsToBeReplacedEntry.Split(',').Select(t => t.Trim()).ToList();
+                
+                var replaceValues = string.IsNullOrWhiteSpace(TagsToReplaceEntry) 
+                    ? null 
+                    : TagsToReplaceEntry.Split(',').Select(t => t.Trim()).ToList();
+
+                var appendList = string.IsNullOrWhiteSpace(TagsToAppendEntry) 
+                    ? null 
+                    : TagsToAppendEntry.Split(',').Select(t => t.Trim()).Where(t => !string.IsNullOrWhiteSpace(t)).ToList();
+                
+                string anchorTag = ExistingTagToFindEntry?.Trim();
+
+                // 2. Iterate over all loaded files
+                foreach (var imagePath in ImageFiles)
+                {
+                    try 
+                    {
+                        // Get text content for the current file (.txt or .caption)
+                        //
+                        string currentText = _fileManipulator.GetTextFromFile(imagePath, CurrentType);
+                        
+                        // Skip empty files if we aren't appending to the end
+                        if (string.IsNullOrWhiteSpace(currentText) && (appendList == null || appendList.Count == 0)) continue;
+
+                        // Split tags into a mutable list
+                        var tagList = currentText.Split(',')
+                                                .Select(t => t.Trim())
+                                                .Where(t => !string.IsNullOrWhiteSpace(t))
+                                                .ToList();
+
+                        bool isModified = false;
+
+                        // --- REMOVE LOGIC ---
+                        if (removeSet != null && removeSet.Count > 0)
+                        {
+                            int removedCount = tagList.RemoveAll(t => removeSet.Contains(t));
+                            if (removedCount > 0) isModified = true;
+                        }
+
+                        // --- REPLACE LOGIC ---
+                        if (replaceTargets != null && replaceValues != null && replaceTargets.Count > 0)
+                        {
+                            for (int i = 0; i < tagList.Count; i++)
+                            {
+                                int targetIndex = replaceTargets.FindIndex(x => x.Equals(tagList[i], StringComparison.OrdinalIgnoreCase));
+                                if (targetIndex != -1)
+                                {
+                                    // If match found, replace it
+                                    if (targetIndex < replaceValues.Count)
+                                    {
+                                        tagList[i] = replaceValues[targetIndex];
+                                        isModified = true;
+                                    }
+                                    else if (replaceValues.Count == 1)
+                                    {
+                                        // Broadcast single replacement tag to all targets
+                                        tagList[i] = replaceValues[0];
+                                        isModified = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        // --- APPEND LOGIC (Updated) ---
+                        if (appendList != null && appendList.Count > 0)
+                        {
+                            if (!string.IsNullOrWhiteSpace(anchorTag))
+                            {
+                                // CASE A: Anchor Tag Provided (Strict Mode)
+                                // Find the index of the anchor tag
+                                int anchorIndex = tagList.FindIndex(t => t.Equals(anchorTag, StringComparison.OrdinalIgnoreCase));
+
+                                // Only append IF the anchor tag exists in this specific file
+                                if (anchorIndex != -1)
+                                {
+                                    tagList.InsertRange(anchorIndex + 1, appendList);
+                                    isModified = true;
+                                }
+                            }
+                            else
+                            {
+                                // CASE B: No Anchor Tag Provided
+                                // Append to the very end of the list
+                                tagList.AddRange(appendList);
+                                isModified = true;
+                            }
+                        }
+
+                        // 3. Save Changes
+                        if (isModified)
+                        {
+                            string newTags = string.Join(", ", tagList);
+                            string textPath = Path.ChangeExtension(imagePath, CurrentType);
+                            _fileManipulator.SaveTextToFile(textPath, newTags);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log errors but continue processing other files
+                        Logger.SetLatestLogMessage($"Error processing file {Path.GetFileName(imagePath)}: {ex.Message}", LogMessageColor.Error);
+                    }
+                }
+            });
+
+            // 4. Refresh UI
+            // Update the view for the currently selected image to reflect the bulk changes immediately
+            await Dispatcher.UIThread.InvokeAsync(() => UpdateCurrentSelectedTags());
+            Logger.SetLatestLogMessage("Batch operations completed.", LogMessageColor.Warning);
         }
     }
 

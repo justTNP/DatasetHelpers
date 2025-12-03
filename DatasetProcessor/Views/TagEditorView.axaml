@@ -205,87 +205,109 @@
 					</Button>
 				</Grid>
 				<Grid Grid.Row="4"
-					  Classes="gridSecondary"
-					  RowDefinitions="2*, 10, auto, 10, 1*, 10, auto">
-					<!-- TAGS EDITOR -->
+					Classes="gridSecondary"
+					RowDefinitions="2*, 10, auto, 10, auto, 10, auto, 10, auto">
+
 					<Grid>
-					<!-- Define one row -->
-					<Grid.RowDefinitions>
-						<RowDefinition Height="300"/>
-					</Grid.RowDefinitions>
-					<!-- Nested grid with two columns -->
-					<Grid Grid.Row="0">
-						<Grid.ColumnDefinitions>
-						<!-- Left: main TextEditor for tag entry -->
-						<ColumnDefinition Width="3*"/>
-						<!-- Right: Suggestions and filter input -->
-						<ColumnDefinition Width="*"/>
-						</Grid.ColumnDefinitions>
-						
-						<!-- Tag input area -->
-						<AvaloniaEdit:TextEditor Grid.Column="0"
-												x:Name="EditorTags"
-												Padding="10"
-												VerticalScrollBarVisibility="Auto"
-												HorizontalScrollBarVisibility="Disabled"
-												SyntaxHighlighting="True"
-												Background="{DynamicResource SurfaceDark}"
-												BorderBrush="{DynamicResource Primary}"
-												BorderThickness="1"
-												FontSize="17"
-												FontWeight="Light"/>
-						
-						<!-- Nested grid for Suggestions and Filter box in the right column -->
-						<Grid Grid.Column="1">
 						<Grid.RowDefinitions>
-							<RowDefinition Height="4.5*"/>
-							<RowDefinition Height="*"/>
+							<RowDefinition Height="300"/>
 						</Grid.RowDefinitions>
-						
-						<!-- Suggestions display area using a ListBox -->
-						<ListBox Grid.Column="1"
-								x:Name="SuggestionsListBox"
-								Padding="10"
-								Background="{DynamicResource SurfaceDark}"
-								BorderBrush="{DynamicResource Primary}"
-								BorderThickness="1"
-								FontSize="13"
-								ItemsSource="{Binding TagSuggestions}"
-								ItemTemplate="{StaticResource TagSuggestionTemplate}"
-								DoubleTapped="TagDoubleTapped" />
-						
-						<!-- Filter input box -->
-						<TextBox Grid.Row="1"
-								Margin="0,10,0,0"
-								Watermark="Type to filter..."
-								Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+						<Grid Grid.Row="0">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="3*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+							
+							<AvaloniaEdit:TextEditor Grid.Column="0"
+													x:Name="EditorTags"
+													Padding="10"
+													VerticalScrollBarVisibility="Auto"
+													HorizontalScrollBarVisibility="Disabled"
+													SyntaxHighlighting="True"
+													Background="{DynamicResource SurfaceDark}"
+													BorderBrush="{DynamicResource Primary}"
+													BorderThickness="1"
+													FontSize="17"
+													FontWeight="Light"/>
+							
+							<Grid Grid.Column="1">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="4.5*"/>
+									<RowDefinition Height="*"/>
+								</Grid.RowDefinitions>
+								<ListBox Grid.Column="1"
+										x:Name="SuggestionsListBox"
+										Padding="10"
+										Background="{DynamicResource SurfaceDark}"
+										BorderBrush="{DynamicResource Primary}"
+										BorderThickness="1"
+										FontSize="13"
+										ItemsSource="{Binding TagSuggestions}"
+										ItemTemplate="{StaticResource TagSuggestionTemplate}"
+										DoubleTapped="TagDoubleTapped" />
+								<TextBox Grid.Row="1"
+										Margin="0,10,0,0"
+										Watermark="Filter..."
+										Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+							</Grid>
 						</Grid>
 					</Grid>
-					</Grid>
+
 					<Label Grid.Row="2" 
-						   Foreground="{Binding TokenTextColor}"
-						   Content="{Binding CurrentImageTokenCount}"
-						   HorizontalAlignment="Right"
-						   Margin="0, -8, 3, 0"/>
-					<!-- HIGHLIGHT PANEL -->
+						Foreground="{Binding TokenTextColor}"
+						Content="{Binding CurrentImageTokenCount}"
+						HorizontalAlignment="Right"
+						Margin="0, -8, 3, 0"/>
+
 					<Grid Grid.Row="4"
-						  Classes="gridPrimary"
-						  RowDefinitions="auto, 10, *">
+						Classes="gridPrimary"
+						RowDefinitions="auto, 10, *">
 						<Label Grid.Row="0"
-							   Padding="8"
-							   Content="Highlight words:"
-							   HorizontalAlignment="Left"/>
-						<TextBox Grid.Row="6" 
-								 x:Name="EditorHighlight"
-								 TextWrapping="Wrap"
-								 Background="Transparent"
-								 Watermark="Enter words you want to highlight (even if its just part of a tag), separated by commas. For example: 'tag1, tag2'. Leave blank if not applicable. Add a line break to use different highlighting colors."
-								 Text="{Binding WordsToHighlight}"/>
+							Padding="8"
+							Content="Highlight words:"
+							HorizontalAlignment="Left"/>
+						<TextBox Grid.Row="2" 
+								x:Name="EditorHighlight"
+								TextWrapping="Wrap"
+								Background="Transparent"
+								Watermark="Enter words to highlight..."
+								Text="{Binding WordsToHighlight}"/>
 					</Grid>
+
 					<Label Grid.Row="6"
-						   FontSize="12"
-						   Foreground="{DynamicResource SecondaryLight}"
-						   Content="Note: text changes are automatically saved whenever you type anything in the text box."/>
+						FontSize="12"
+						Foreground="{DynamicResource SecondaryLight}"
+						Content="Note: text changes are automatically saved whenever you type anything in the text box."/>
+
+					<Expander Grid.Row="8" Header="Batch Tag Operations" HorizontalAlignment="Stretch">
+						<StackPanel Spacing="10" Margin="5">
+							<TextBlock Text="Applies to ALL loaded files matching the current type (.txt/.caption)." 
+									FontSize="11" Foreground="{DynamicResource SecondaryLight}" TextWrapping="Wrap"/>
+
+							<Grid ColumnDefinitions="60, 10, *">
+								<Label Grid.Column="0" Content="Remove:" VerticalAlignment="Center"/>
+								<TextBox Grid.Column="2" Text="{Binding TagsToRemoveEntry}" Watermark="tag1, tag2"/>
+							</Grid>
+							
+							<Grid ColumnDefinitions="60, 10, *, 10, *">
+								<Label Grid.Column="0" Content="Replace:" VerticalAlignment="Center"/>
+								<TextBox Grid.Column="2" Text="{Binding TagsToBeReplacedEntry}" Watermark="Target tags"/>
+								<TextBox Grid.Column="4" Text="{Binding TagsToReplaceEntry}" Watermark="New tags"/>
+							</Grid>
+
+							<Grid ColumnDefinitions="60, 10, *, 10, *">
+								<Label Grid.Column="0" Content="Append:" VerticalAlignment="Center"/>
+								<TextBox Grid.Column="2" Text="{Binding ExistingTagToFindEntry}" Watermark="After tag..."/>
+								<TextBox Grid.Column="4" Text="{Binding TagsToAppendEntry}" Watermark="Tags to append"/>
+							</Grid>
+
+							<Button Content="Apply to All Files" 
+									Command="{Binding ApplyBatchTagOperationsCommand}" 
+									HorizontalAlignment="Right"
+									Classes="accentButton"/>
+						</StackPanel>
+					</Expander>
+
 				</Grid>
 			</Grid>
 		</Grid>
