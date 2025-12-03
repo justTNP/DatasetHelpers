@@ -38,7 +38,7 @@
         </Grid>
 
 		<!-- MAIN CONTENT -->
-		<Grid Grid.Row="2" ColumnDefinitions="3*, 10, 1*">
+		<Grid Grid.Row="2" ColumnDefinitions="3*, 10, 0.5*">
 			<!-- LEFT COLUMN -->
 			<Grid Grid.Column="0" RowDefinitions="auto, 10, auto, 10, auto, 10, auto, 30, auto, 10, auto, 10, auto, 10, auto, 10, auto, 16">
 				<ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
